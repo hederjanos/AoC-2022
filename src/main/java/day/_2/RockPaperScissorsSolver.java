@@ -8,6 +8,7 @@ import java.util.Map;
 public class RockPaperScissorsSolver extends Solver<Integer> {
 
     private static final Map<Character, Shape> encodingMap = new HashMap<>();
+    private static final Map<Character, GameState> realEncodingMap = new HashMap<>();
 
     static {
         encodingMap.putIfAbsent('A', Shape.ROCK);
@@ -16,6 +17,12 @@ public class RockPaperScissorsSolver extends Solver<Integer> {
         encodingMap.putIfAbsent('X', Shape.ROCK);
         encodingMap.putIfAbsent('Y', Shape.PAPER);
         encodingMap.putIfAbsent('Z', Shape.SCISSORS);
+    }
+
+    static {
+        realEncodingMap.putIfAbsent('X', GameState.LOSE);
+        realEncodingMap.putIfAbsent('Y', GameState.DRAW);
+        realEncodingMap.putIfAbsent('Z', GameState.WIN);
     }
 
     public RockPaperScissorsSolver(String filename) {
@@ -60,7 +67,36 @@ public class RockPaperScissorsSolver extends Solver<Integer> {
 
     @Override
     protected Integer solvePartTwo() {
-        return null;
+        return puzzle.stream()
+                .map(this::getScoreOfTurnTwo)
+                .reduce(0, Integer::sum);
+    }
+
+    private int getScoreOfTurnTwo(String line) {
+        int score = 0;
+        Shape opponent = encodingMap.get(line.charAt(0));
+        GameState gameState = realEncodingMap.get(line.charAt(2));
+        if (GameState.DRAW.equals(gameState)) {
+            score += opponent.getValue();
+        } else if (GameState.LOSE.equals(gameState)) {
+            if (Shape.ROCK.equals(opponent)) {
+                score += Shape.SCISSORS.getValue();
+            } else if (Shape.PAPER.equals(opponent)) {
+                score += Shape.ROCK.getValue();
+            } else {
+                score += Shape.PAPER.getValue();
+            }
+        } else {
+            if (Shape.ROCK.equals(opponent)) {
+                score += Shape.PAPER.getValue();
+            } else if (Shape.PAPER.equals(opponent)) {
+                score += Shape.SCISSORS.getValue();
+            } else {
+                score += Shape.ROCK.getValue();
+            }
+        }
+        score += gameState.getValue();
+        return score;
     }
 
 }
