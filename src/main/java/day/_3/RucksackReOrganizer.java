@@ -22,6 +22,11 @@ public class RucksackReOrganizer extends Solver<Integer> {
     }
 
     private int convertRucksackItemsToPriority(String items) {
+        Set<Character> firstCompartment = getCommonItems(items);
+        return calculatePriority(firstCompartment.stream().findFirst().orElseThrow());
+    }
+
+    private Set<Character> getCommonItems(String items) {
         Set<Character> firstCompartment = new HashSet<>();
         Set<Character> secondCompartment = new HashSet<>();
         int halfOfItems = items.length() / 2;
@@ -32,7 +37,7 @@ public class RucksackReOrganizer extends Solver<Integer> {
                     secondCompartment.add(items.charAt(i + halfOfItems));
                 });
         firstCompartment.retainAll(secondCompartment);
-        return calculatePriority(firstCompartment.stream().findFirst().orElseThrow());
+        return firstCompartment;
     }
 
     private int calculatePriority(char intersection) {
@@ -48,15 +53,21 @@ public class RucksackReOrganizer extends Solver<Integer> {
     }
 
     public int convertGroupItemsToPriority(List<String> items) {
-        List<Set<Character>> groups = items.stream()
+        Set<Character> commonItems = getCommonItems(items);
+        return calculatePriority(commonItems.stream().findFirst().orElseThrow());
+    }
+
+    private Set<Character> getCommonItems(List<String> items) {
+        return items.stream()
                 .map(item -> IntStream.range(0, item.length())
                         .boxed()
                         .map(item::charAt)
                         .collect(Collectors.toSet()))
-                .collect(Collectors.toList());
-        HashSet<Character> commonItems = groups.stream()
-                .collect(() -> new HashSet<>(groups.get(0)), Set::retainAll, Set::retainAll);
-        return calculatePriority(commonItems.stream().findFirst().orElseThrow());
+                .reduce((a, b) -> {
+                    a.retainAll(b);
+                    return a;
+                })
+                .orElseThrow();
     }
 
 }
