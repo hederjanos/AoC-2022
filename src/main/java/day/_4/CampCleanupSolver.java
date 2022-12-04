@@ -8,17 +8,13 @@ import java.util.stream.Collectors;
 
 public class CampCleanupSolver extends Solver<Integer> {
 
+    List<List<Section>> sectionsPerLine;
+
     public CampCleanupSolver(String filename) {
         super(filename);
-    }
-
-    @Override
-    protected Integer solvePartOne() {
-        return (int) puzzle.stream()
+        sectionsPerLine = puzzle.stream()
                 .map(this::parseSectionsPerLine)
-                .map(sections -> sections.get(0).fullyContains(sections.get(1)))
-                .filter(a -> a)
-                .count();
+                .collect(Collectors.toList());
     }
 
     private List<Section> parseSectionsPerLine(String line) {
@@ -28,8 +24,19 @@ public class CampCleanupSolver extends Solver<Integer> {
     }
 
     @Override
+    protected Integer solvePartOne() {
+        return (int) sectionsPerLine.stream()
+                .map(sections -> sections.get(0).fullyContains(sections.get(1)))
+                .filter(a -> a)
+                .count();
+    }
+
+    @Override
     protected Integer solvePartTwo() {
-        return null;
+        return (int) sectionsPerLine.stream()
+                .map(sections -> sections.get(0).overlapsWith(sections.get(1)))
+                .filter(a -> a)
+                .count();
     }
 
 }

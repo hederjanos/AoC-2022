@@ -1,6 +1,6 @@
 package day._4;
 
-public class Section implements Comparable<Section>{
+public class Section implements Comparable<Section> {
 
     private final int start;
     private final int end;
@@ -22,6 +22,11 @@ public class Section implements Comparable<Section>{
     public boolean fullyContains(Section section) {
         return (section.getStart() >= getStart() && section.getEnd() <= getEnd()) ||
                (section.getStart() <= getStart() && section.getEnd() >= getEnd());
+    }
+
+    public boolean overlapsWith(Section section) {
+        return (getEnd() >= section.getStart() && getStart() <= section.getEnd()) ||
+               (getStart() <= section.getEnd() && getEnd() >= section.getStart());
     }
 
     @Override
