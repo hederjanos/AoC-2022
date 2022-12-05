@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class CampCleanupSolver extends Solver<Integer> {
 
-    List<SectionPair> sectionPairs;
+    private final List<SectionPair> sectionPairs;
 
     public CampCleanupSolver(String filename) {
         super(filename);
