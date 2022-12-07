@@ -33,22 +33,32 @@ public class Directory extends DataUnit {
         return size;
     }
 
-    public long getTotalSizeOfDirectories(long maxSize) {
+    public long getTotalSizeOfDirectoriesWithSizeAtMost(long maxSize) {
         Set<Directory> directories = new HashSet<>();
-        getTotalSizeOfDirectories(maxSize, this, directories);
+        getTotalSizeOfDirectoriesWithSizeAtMost(maxSize, this, directories);
         return directories.stream().map(Directory::getSize).reduce(0L, Long::sum);
     }
 
-    private void getTotalSizeOfDirectories(Long maxSize, Directory directory, Set<Directory> dirs) {
+    private void getTotalSizeOfDirectoriesWithSizeAtMost(Long maxSize, Directory directory, Set<Directory> dirs) {
         for (DataUnit dataUnit : directory.getDataUnits()) {
             if (dataUnit instanceof Directory) {
                 long currentSize = ((Directory) dataUnit).getSize();
                 if (currentSize <= maxSize) {
                     dirs.add((Directory) dataUnit);
                 }
-                getTotalSizeOfDirectories(maxSize, (Directory) dataUnit, dirs);
+                getTotalSizeOfDirectoriesWithSizeAtMost(maxSize, (Directory) dataUnit, dirs);
             }
         }
+    }
+
+    public long getSmallestSizedDirectoryAtLeast(long atLeast) {
+        Set<Directory> directories = new HashSet<>();
+        getTotalSizeOfDirectoriesWithSizeAtMost(Long.MAX_VALUE, this, directories);
+        return directories.stream()
+                .map(Directory::getSize)
+                .sorted()
+                .filter(size -> size >= atLeast)
+                .findFirst().orElseThrow();
     }
 
     @Override
