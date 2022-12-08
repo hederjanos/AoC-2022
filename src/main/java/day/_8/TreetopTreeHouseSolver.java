@@ -23,7 +23,7 @@ public class TreetopTreeHouseSolver extends Solver<Integer> {
 
     @Override
     protected Integer solvePartTwo() {
-        return null;
+        return heightMap.getHighestScenicScore();
     }
 
 }

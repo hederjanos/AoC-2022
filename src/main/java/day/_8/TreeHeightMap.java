@@ -60,4 +60,38 @@ public class TreeHeightMap extends IntegerGrid {
         return gridCellIsVisibleFromThatDirection;
     }
 
+    public int getHighestScenicScore() {
+        return board.stream().map(this::calculateScenicScoreOf).max(Integer::compare).orElseThrow();
+    }
+
+    private int calculateScenicScoreOf(GridCell<Integer> gridCell) {
+        int scenicScore = 1;
+        Direction[] directions = Direction.values();
+        for (Direction direction : directions) {
+            if (direction.ordinal() % 2 == 0) {
+                scenicScore *= countVisibleCellsFromTo(gridCell, direction);
+            }
+        }
+
+        return scenicScore;
+    }
+
+    private int countVisibleCellsFromTo(GridCell<Integer> gridCell, Direction direction) {
+        int numberOfVisibleCells = 0;
+        Coordinate newCoordinate = gridCell.getCoordinate();
+        do {
+            if (newCoordinate != gridCell.getCoordinate()) {
+                GridCell<Integer> cellInLine = board.get(calculateCellIndex(newCoordinate.getX(), newCoordinate.getY()));
+                numberOfVisibleCells++;
+                if (cellInLine.getValue() >= gridCell.getValue()) {
+                    break;
+                }
+            }
+            newCoordinate = newCoordinate.copy();
+            newCoordinate.setX(newCoordinate.getX() + direction.getX());
+            newCoordinate.setY(newCoordinate.getY() + direction.getY());
+        } while (isCoordinateInBounds(newCoordinate));
+        return numberOfVisibleCells;
+    }
+
 }
