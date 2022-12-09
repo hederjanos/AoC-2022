@@ -139,6 +139,15 @@ public class Coordinate {
         return this.getX() == end.getX() || this.getY() == end.getY();
     }
 
+    public Coordinate isAdjacent(Coordinate coordinate) {
+        Coordinate subtract = this.subtract(coordinate);
+        if (Math.abs(subtract.getX()) <= 1 && Math.abs(subtract.getY()) <= 1) {
+            return null;
+        } else {
+            return subtract;
+        }
+    }
+
     public static Comparator<Coordinate> getXOrderComparator() {
         return new XOrder();
     }
