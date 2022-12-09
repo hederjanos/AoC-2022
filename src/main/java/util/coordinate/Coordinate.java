@@ -51,7 +51,6 @@ public class Coordinate {
         newCoordinate.setX(newCoordinate.getX() - coordinate.getX());
         newCoordinate.setY(newCoordinate.getY() - coordinate.getY());
         return newCoordinate;
-
     }
 
     public Set<Coordinate> getAdjacentCoordinates() {
@@ -147,6 +146,33 @@ public class Coordinate {
             return subtract;
         }
     }
+
+    public Coordinate moveByDirection(Direction direction) {
+        Coordinate newCoordinate = copy();
+        newCoordinate.setX(newCoordinate.getX() + direction.getX());
+        newCoordinate.setY(newCoordinate.getY() + direction.getY());
+        return newCoordinate;
+    }
+
+    public Coordinate moveByCoordinate(Coordinate coordinate) {
+        return copy().add(getDirectionEquivalentCoordinate(coordinate));
+    }
+
+    private Coordinate getDirectionEquivalentCoordinate(Coordinate coordinate) {
+        Coordinate adjusted = new Coordinate(coordinate);
+        if (adjusted.getX() > 1) {
+            adjusted.setX(adjusted.getX() - 1);
+        } else if (adjusted.getX() < -1) {
+            adjusted.setX(adjusted.getX() + 1);
+        }
+        if (adjusted.getY() > 1) {
+            adjusted.setY(adjusted.getY() - 1);
+        } else if (adjusted.getY() < -1) {
+            adjusted.setY(adjusted.getY() + 1);
+        }
+        return adjusted;
+    }
+
 
     public static Comparator<Coordinate> getXOrderComparator() {
         return new XOrder();

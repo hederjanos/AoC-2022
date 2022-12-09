@@ -14,16 +14,20 @@ public class RopeBridgeSolver extends Solver<Integer> {
 
     @Override
     protected Integer solvePartOne() {
-        rope = new Rope();
+        rope = new Rope(2);
         return puzzle.stream()
                 .map(Motion::new)
                 .flatMap(motion -> rope.move(motion).stream())
-                .collect(Collectors.toSet()).size() + 1;
+                .collect(Collectors.toSet()).size();
     }
 
     @Override
     protected Integer solvePartTwo() {
-        return null;
+        rope = new Rope(10);
+        return puzzle.stream()
+                       .map(Motion::new)
+                       .flatMap(motion -> rope.move(motion).stream())
+                       .collect(Collectors.toSet()).size();
     }
 
 }
