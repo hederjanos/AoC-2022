@@ -2,57 +2,54 @@ package day._10;
 
 import util.common.Solver;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class CathodeRayTubeSolver extends Solver<Integer> {
 
+    private static final int SCREEN_WIDTH = 40;
+    private static final int SCREEN_HEIGHT = 6;
+    private int register;
+    private final List<Integer> registerValues = new ArrayList<>();
+
     public CathodeRayTubeSolver(String filename) {
         super(filename);
+        register = 1;
+        registerValues.add(0, register);
+        puzzle.forEach(this::executeInstruction);
+    }
+
+    private void executeInstruction(String line) {
+        int registerIndex = registerValues.size() - 1;
+        String[] command = line.split(" ");
+        if (command[0].equals("noop")) {
+            registerValues.add(++registerIndex, register);
+        } else {
+            registerValues.add(++registerIndex, register);
+            registerValues.add(++registerIndex, register);
+            register += Integer.parseInt(command[1]);
+        }
     }
 
     @Override
     protected Integer solvePartOne() {
-
-        AtomicInteger cycleCounter = new AtomicInteger(1);
-        AtomicInteger register = new AtomicInteger(1);
-        AtomicInteger read = new AtomicInteger(0);
-
-        return IntStream.iterate(20, i -> i <= 220, i -> i + 40)
+        return IntStream.iterate(20, i -> i <= 220, i -> i + SCREEN_WIDTH)
                 .boxed()
-                .map(i -> {
-                    completeCycles(cycleCounter, i, register, read);
-                    return i * register.get();
-                })
+                .map(i -> i * registerValues.get(i))
                 .reduce(0, Integer::sum);
-
     }
-
-    private boolean completeCycles(AtomicInteger cycleCounter, Integer i, AtomicInteger register, AtomicInteger read) {
-        boolean completed = true;
-        while (cycleCounter.get() != i) {
-            String[] command = puzzle.get(read.get()).split(" ");
-            if (command[0].equals("noop")) {
-                cycleCounter.incrementAndGet();
-                read.incrementAndGet();
-            } else {
-                if (cycleCounter.get() + 1 == i) {
-                    completed = false;
-                    break;
-                } else {
-                    cycleCounter.incrementAndGet();
-                }
-                cycleCounter.incrementAndGet();
-                read.incrementAndGet();
-                register.addAndGet(Integer.parseInt(command[1]));
-            }
-        }
-        return completed;
-    }
-
 
     @Override
     protected Integer solvePartTwo() {
+        String screen = IntStream.iterate(0, i -> i < SCREEN_HEIGHT, i -> i + 1)
+                .mapToObj(i -> IntStream.iterate(0, j -> j < SCREEN_WIDTH, j -> j + 1)
+                        .boxed()
+                        .map(j -> Math.abs(registerValues.get(j + i * SCREEN_WIDTH + 1) - j) <= 1 ? "#" : " ")
+                        .collect(Collectors.joining()))
+                .collect(Collectors.joining(System.lineSeparator()));
+        System.out.println(screen);
         return null;
     }
 
