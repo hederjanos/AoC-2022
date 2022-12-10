@@ -13,7 +13,7 @@ public class WareHouse {
 
     public WareHouse(String numberOfStacks, List<String> crateLines) {
         int stackSize = Integer.parseInt(numberOfStacks);
-        IntStream.iterate(0, i -> i < stackSize, i -> i + 1).forEach(i -> stacks.add(new ArrayDeque<>()));
+        IntStream.range(0, stackSize).forEach(i -> stacks.add(new ArrayDeque<>()));
         IntStream.range(0, crateLines.size())
                 .forEach(i -> {
                     char[] cratesPerRow = parseCratesInLine(crateLines.get(i));
@@ -39,7 +39,7 @@ public class WareHouse {
     }
 
     public void processProcedures(List<Procedure> procedures) {
-        procedures.forEach(procedure -> IntStream.iterate(0, i -> i < procedure.getNumberOfMoves(), i -> i + 1)
+        procedures.forEach(procedure -> IntStream.range(0, procedure.getNumberOfMoves())
                 .forEach(i -> stacks.get(procedure.getTo()).addLast(stacks.get(procedure.getFrom()).removeLast())));
     }
 

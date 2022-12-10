@@ -36,17 +36,15 @@ public class CathodeRayTubeSolver extends Solver<Integer> {
     @Override
     protected Integer solvePartOne() {
         return IntStream.iterate(20, i -> i <= 220, i -> i + SCREEN_WIDTH)
-                .boxed()
-                .map(i -> i * registerValues.get(i))
+                .mapToObj(i -> i * registerValues.get(i))
                 .reduce(0, Integer::sum);
     }
 
     @Override
     protected Integer solvePartTwo() {
-        String screen = IntStream.iterate(0, i -> i < SCREEN_HEIGHT, i -> i + 1)
-                .mapToObj(i -> IntStream.iterate(0, j -> j < SCREEN_WIDTH, j -> j + 1)
-                        .boxed()
-                        .map(j -> Math.abs(registerValues.get(j + i * SCREEN_WIDTH + 1) - j) <= 1 ? "#" : " ")
+        String screen = IntStream.range(0, SCREEN_HEIGHT)
+                .mapToObj(i -> IntStream.range(0, SCREEN_WIDTH)
+                        .mapToObj(j -> Math.abs(registerValues.get(j + i * SCREEN_WIDTH + 1) - j) <= 1 ? "#" : " ")
                         .collect(Collectors.joining()))
                 .collect(Collectors.joining(System.lineSeparator()));
         System.out.println(screen);

@@ -12,9 +12,7 @@ public class Rope {
 
     public Rope(int numberOfKnots) {
         knots = new Coordinate[numberOfKnots];
-        IntStream.iterate(0, i -> i < numberOfKnots, i -> i + 1)
-                .boxed()
-                .forEach(i -> knots[i] = new Coordinate(0, 0));
+        IntStream.range(0, numberOfKnots).forEach(i -> knots[i] = new Coordinate(0, 0));
     }
 
     public Set<Coordinate> move(Motion motion) {
@@ -23,7 +21,6 @@ public class Rope {
                 .forEach(i -> {
                     knots[0] = knots[0].moveByDirection(motion.getDirection());
                     IntStream.range(1, knots.length)
-                            .boxed()
                             .forEach(j -> {
                                 knots[j] = moveOneStep(j);
                                 visitedPositionsByTail.add(knots[knots.length - 1]);

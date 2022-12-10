@@ -28,7 +28,8 @@ public class RopeBridgeSolver extends Solver<Integer> {
         return puzzle.stream()
                 .map(Motion::new)
                 .flatMap(motion -> rope.move(motion).stream())
-                .collect(Collectors.toSet()).size();
+                .collect(Collectors.toSet())
+                .size();
     }
 
 }

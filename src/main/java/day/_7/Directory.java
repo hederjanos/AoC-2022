@@ -58,7 +58,8 @@ public class Directory extends DataUnit {
                 .map(Directory::getSize)
                 .sorted()
                 .filter(size -> size >= atLeast)
-                .findFirst().orElseThrow();
+                .findFirst()
+                .orElseThrow();
     }
 
     @Override

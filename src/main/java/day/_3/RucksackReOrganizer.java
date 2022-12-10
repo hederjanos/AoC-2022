@@ -31,7 +31,6 @@ public class RucksackReOrganizer extends Solver<Integer> {
         Set<Character> secondCompartment = new HashSet<>();
         int halfOfItems = items.length() / 2;
         IntStream.range(0, halfOfItems)
-                .boxed()
                 .forEach(i -> {
                     firstCompartment.add(items.charAt(i));
                     secondCompartment.add(items.charAt(i + halfOfItems));
