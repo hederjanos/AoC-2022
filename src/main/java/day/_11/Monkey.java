@@ -4,6 +4,7 @@ import day._11.operation.MathOperation;
 import day._11.operation.TestOperation;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +28,7 @@ public class Monkey {
     }
 
     private List<Item> parseItems(String itemsLine) {
-        List<Item> initItems = new ArrayList<>();
+        List<Item> initItems = new LinkedList<>();
         Pattern pattern = Pattern.compile("[0-9]+");
         Matcher matcher = pattern.matcher(itemsLine);
         while (matcher.find()) {
