@@ -12,6 +12,10 @@ public class Item {
         this.worryLevel = Integer.parseInt(worryLevel);
     }
 
+    public Item(int worryLevel) {
+        this.worryLevel = worryLevel;
+    }
+
     public void doMath(MathOperation operation) {
         Operator operator = operation.getOperator();
         switch (operator) {
@@ -31,7 +35,15 @@ public class Item {
     }
 
     public int doTest(TestOperation operation) {
-        return operation.getBooleanTable()[(worryLevel / operation.getOperand() == 0) ? 0 : 1];
+        return operation.getBooleanTable()[(worryLevel % operation.getOperand() == 0) ? 0 : 1];
     }
 
+    public int getWorryLevel() {
+        return worryLevel;
+    }
+
+    @Override
+    public String toString() {
+        return worryLevel + "";
+    }
 }
