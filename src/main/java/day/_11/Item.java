@@ -6,13 +6,13 @@ import day._11.operation.TestOperation;
 
 public class Item {
 
-    private int worryLevel;
+    private long worryLevel;
 
     public Item(String worryLevel) {
         this.worryLevel = Integer.parseInt(worryLevel);
     }
 
-    public Item(int worryLevel) {
+    public Item(long worryLevel) {
         this.worryLevel = worryLevel;
     }
 
@@ -22,12 +22,15 @@ public class Item {
             case ADD:
                 worryLevel += operation.getOperand();
                 break;
-            case DIVIDE:
-                worryLevel = Math.floorDiv(worryLevel, operation.getOperand());
-                break;
             case MULTIPLY:
                 int operand = operation.getOperand();
                 worryLevel *= operand >= 0 ? operation.getOperand() : worryLevel;
+                break;
+            case DIVIDE:
+                worryLevel = Math.floorDiv(worryLevel, operation.getOperand());
+                break;
+            case MOD:
+                worryLevel %= operation.getOperand();
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -38,7 +41,7 @@ public class Item {
         return operation.getBooleanTable()[(worryLevel % operation.getOperand() == 0) ? 0 : 1];
     }
 
-    public int getWorryLevel() {
+    public long getWorryLevel() {
         return worryLevel;
     }
 
@@ -46,4 +49,5 @@ public class Item {
     public String toString() {
         return worryLevel + "";
     }
+
 }

@@ -1,7 +1,6 @@
 package day._11;
 
 import day._11.operation.MathOperation;
-import day._11.operation.Operator;
 import day._11.operation.TestOperation;
 
 import java.util.ArrayList;
@@ -12,9 +11,10 @@ import java.util.stream.Collectors;
 
 public class Monkey {
 
-    private static final MathOperation DEFAULT_OPERATION = new MathOperation(Operator.DIVIDE, 3);
+    private static MathOperation defaultOperation;
+    private static MathOperation modOperation;
     private final int id;
-    private int numberOfInspection;
+    private long numberOfInspection;
     private final MathOperation mathOperation;
     private final TestOperation testOperation;
     private final List<Item> items;
@@ -40,7 +40,8 @@ public class Monkey {
         numberOfInspection++;
         Item newItem = new Item(item.getWorryLevel());
         newItem.doMath(mathOperation);
-        newItem.doMath(DEFAULT_OPERATION);
+        newItem.doMath(defaultOperation);
+        newItem.doMath(modOperation);
         return newItem;
     }
 
@@ -56,7 +57,7 @@ public class Monkey {
         items.add(item);
     }
 
-    public int getNumberOfInspection() {
+    public long getNumberOfInspection() {
         return numberOfInspection;
     }
 
@@ -64,8 +65,25 @@ public class Monkey {
         return new ArrayList<>(items);
     }
 
+    public TestOperation getTestOperation() {
+        return testOperation;
+    }
+
+    public static void setDefaultOperation(MathOperation defaultOperation) {
+        Monkey.defaultOperation = defaultOperation;
+    }
+
+    public static void setModOperation(MathOperation modOperation) {
+        Monkey.modOperation = modOperation;
+    }
+
     @Override
     public String toString() {
         return "Monkey " + id + ": " + items.stream().map(Item::toString).collect(Collectors.joining(", "));
     }
+
+    public String toStringWithNumberOfInspections() {
+        return "Monkey " + id + ": " + numberOfInspection;
+    }
+
 }
