@@ -26,9 +26,11 @@ public class HeightMap extends IntegerGrid {
                             .forEach(j -> {
                                 GridCell<Integer> cell = new GridCell<>(new Coordinate(j, i), numbers.get(j));
                                 if ('S' == cell.getValue()) {
+                                    cell.setValue((int) 'a');
                                     start = cell;
                                 }
                                 if ('E' == cell.getValue()) {
+                                    cell.setValue((int) 'z');
                                     target = cell;
                                 }
                                 board.add(cell);
@@ -41,52 +43,40 @@ public class HeightMap extends IntegerGrid {
     }
 
     public PathCell findFewestStepPathFromStart(GridCell<Integer> startCell) {
+        Set<GridCell<Integer>> visitedCells = new HashSet<>();
         PathCell solution = new PathCell(startCell.getCoordinate(), 0);
-        startCell.setMarked();
-        Deque<PathCell> queue = new ArrayDeque<>();
-        queue.offer(solution);
-        while (!queue.isEmpty()) {
-            PathCell currentPath = queue.poll();
-            int position = calculateCellIndex(currentPath.getCoordinate().getX(), currentPath.getCoordinate().getY());
-            GridCell<Integer> currentCell = board.get(position);
-            if (atTarget(currentCell)) {
+        Deque<PathCell> pathCells = new ArrayDeque<>();
+        pathCells.offer(solution);
+        while (!pathCells.isEmpty()) {
+            PathCell currentPath = pathCells.poll();
+            Coordinate currentCoordinate = currentPath.getCoordinate();
+            GridCell<Integer> currentCell = board.get(calculateCellIndex(currentCoordinate.getX(), currentCoordinate.getY()));
+            if (target.equals(currentCell)) {
                 solution = currentPath;
                 break;
             }
-            for (Coordinate neighbour : currentPath.getCoordinate().getOrthogonalAdjacentCoordinates()) {
+            for (Coordinate neighbour : currentCoordinate.getOrthogonalAdjacentCoordinates()) {
                 if (isCoordinateInBounds(neighbour)) {
                     GridCell<Integer> nextCell = board.get(calculateCellIndex(neighbour.getX(), neighbour.getY()));
                     Integer currentSteps = currentPath.getNumberOfSteps();
-                    if (!nextCell.isMarked() && isElevationInRange(startCell, currentCell, nextCell)) {
-                        queue.offer(new PathCell(nextCell.getCoordinate(), ++currentSteps));
-                        nextCell.setMarked();
+                    if (!visitedCells.contains(nextCell) && isElevationInRange(currentCell, nextCell)) {
+                        pathCells.offer(new PathCell(nextCell.getCoordinate(), ++currentSteps));
+                        visitedCells.add(nextCell);
                     }
                 }
             }
         }
-        System.out.println(solution);
         return solution;
     }
 
-    private boolean isElevationInRange(GridCell<Integer> startCell, GridCell<Integer> currentCell, GridCell<Integer> nextCell) {
-        if (atStart(startCell, currentCell)) {
-            return true;
-        }
+    private boolean isElevationInRange(GridCell<Integer> currentCell, GridCell<Integer> nextCell) {
         int elevation = nextCell.getValue() - currentCell.getValue();
         return elevation <= 1;
     }
 
-    private boolean atStart(GridCell<Integer> startCell, GridCell<Integer> currentCell) {
-        return startCell.getCoordinate().equals(currentCell.getCoordinate());
-    }
-
-    private boolean atTarget(GridCell<Integer> nextCell) {
-        return target.getCoordinate().equals(nextCell.getCoordinate());
-    }
-
     public List<GridCell<Integer>> collectStartCells() {
         return board.stream()
-                .filter(gridCell -> gridCell.getValue() == 'a' || gridCell.getValue() == 'S')
+                .filter(gridCell -> gridCell.getValue() == 'a')
                 .map(GridCell::copy)
                 .collect(Collectors.toList());
     }

@@ -58,10 +58,6 @@ public abstract class IntegerGrid extends Grid<Integer> {
         return fourWayDirection;
     }
 
-    public void reset() {
-        board.forEach(GridCell::setUnMarked);
-    }
-
     public boolean isCoordinateInBounds(Coordinate coordinate) {
         return coordinate.getX() < width && coordinate.getX() >= 0 && coordinate.getY() < height && coordinate.getY() >= 0;
     }

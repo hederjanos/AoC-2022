@@ -5,7 +5,7 @@ import util.coordinate.Coordinate;
 public final class PathCell {
 
     private final Coordinate coordinate;
-    private Integer numberOfSteps;
+    private final Integer numberOfSteps;
 
     public PathCell(Coordinate coordinate, Integer numberOfSteps) {
         this.coordinate = coordinate.copy();
@@ -20,15 +20,4 @@ public final class PathCell {
         return numberOfSteps;
     }
 
-    public void setNumberOfSteps(Integer numberOfSteps) {
-        this.numberOfSteps = numberOfSteps;
-    }
-
-    @Override
-    public String toString() {
-        return "PathCell{" +
-               "coordinate=" + coordinate +
-               ", numberOfSteps=" + numberOfSteps +
-               '}';
-    }
 }
