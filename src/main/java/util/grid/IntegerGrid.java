@@ -48,6 +48,12 @@ public abstract class IntegerGrid extends Grid<Integer> {
                 .collect(Collectors.toList());
     }
 
+    public static Function<String, List<Integer>> convertContiguousCharactersToList() {
+        return s -> s.chars()
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
     public boolean isFourWayDirection() {
         return fourWayDirection;
     }
