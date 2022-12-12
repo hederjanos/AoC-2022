@@ -6,6 +6,7 @@ import util.grid.IntegerGrid;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class HeightMap extends IntegerGrid {
@@ -35,14 +36,17 @@ public class HeightMap extends IntegerGrid {
                 });
     }
 
-    public PathCell findFewestStepPath() {
-        PathCell solution = new PathCell(start.getCoordinate(), 0);
-        start.setMarked();
+    public PathCell findFewestStepPathFromDefault() {
+        return findFewestStepPathFromStart(start);
+    }
+
+    public PathCell findFewestStepPathFromStart(GridCell<Integer> startCell) {
+        PathCell solution = new PathCell(startCell.getCoordinate(), 0);
+        startCell.setMarked();
         Deque<PathCell> queue = new ArrayDeque<>();
         queue.offer(solution);
         while (!queue.isEmpty()) {
             PathCell currentPath = queue.poll();
-            System.out.println(currentPath);
             int position = calculateCellIndex(currentPath.getCoordinate().getX(), currentPath.getCoordinate().getY());
             GridCell<Integer> currentCell = board.get(position);
             if (atTarget(currentCell)) {
@@ -53,30 +57,38 @@ public class HeightMap extends IntegerGrid {
                 if (isCoordinateInBounds(neighbour)) {
                     GridCell<Integer> nextCell = board.get(calculateCellIndex(neighbour.getX(), neighbour.getY()));
                     Integer currentSteps = currentPath.getNumberOfSteps();
-                    if (!nextCell.isMarked() && isElevationInRange(currentCell, nextCell)) {
+                    if (!nextCell.isMarked() && isElevationInRange(startCell, currentCell, nextCell)) {
                         queue.offer(new PathCell(nextCell.getCoordinate(), ++currentSteps));
                         nextCell.setMarked();
                     }
                 }
             }
         }
+        System.out.println(solution);
         return solution;
     }
 
-    private boolean isElevationInRange(GridCell<Integer> currentCell, GridCell<Integer> nextCell) {
-        if (atStart(currentCell)) {
+    private boolean isElevationInRange(GridCell<Integer> startCell, GridCell<Integer> currentCell, GridCell<Integer> nextCell) {
+        if (atStart(startCell, currentCell)) {
             return true;
         }
         int elevation = nextCell.getValue() - currentCell.getValue();
         return elevation <= 1;
     }
 
-    private boolean atStart(GridCell<Integer> currentCell) {
-        return start.getCoordinate().equals(currentCell.getCoordinate());
+    private boolean atStart(GridCell<Integer> startCell, GridCell<Integer> currentCell) {
+        return startCell.getCoordinate().equals(currentCell.getCoordinate());
     }
 
     private boolean atTarget(GridCell<Integer> nextCell) {
         return target.getCoordinate().equals(nextCell.getCoordinate());
+    }
+
+    public List<GridCell<Integer>> collectStartCells() {
+        return board.stream()
+                .filter(gridCell -> gridCell.getValue() == 'a' || gridCell.getValue() == 'S')
+                .map(GridCell::copy)
+                .collect(Collectors.toList());
     }
 
 }
