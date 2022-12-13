@@ -11,21 +11,21 @@ public class Packet implements Comparable<Packet> {
     private Integer integer;
 
     public static Packet parseNumber(String number) {
-        Deque<Packet> numbers = new ArrayDeque<>();
+        Deque<Packet> packets = new ArrayDeque<>();
         Packet root = new Packet(new ArrayList<>());
-        numbers.push(root);
-        Packet currentNumber;
+        packets.push(root);
+        Packet currentPacket;
         for (int i = 0; i < number.length(); i++) {
-            currentNumber = numbers.peek();
+            currentPacket = packets.peek();
             char c = number.charAt(i);
             if (i != 0 && c == '[') {
-                Packet nestedNumber = new Packet(new ArrayList<>());
-                currentNumber.add(nestedNumber);
-                numbers.push(nestedNumber);
+                Packet nestedPacket = new Packet(new ArrayList<>());
+                currentPacket.add(nestedPacket);
+                packets.push(nestedPacket);
             } else if (Character.isDigit(c)) {
-                currentNumber.add(new Packet(Character.getNumericValue(c)));
+                currentPacket.add(new Packet(Character.getNumericValue(c)));
             } else if (c == ']') {
-                numbers.pop();
+                packets.pop();
             }
         }
         return root;
@@ -58,35 +58,36 @@ public class Packet implements Comparable<Packet> {
     @Override
     public int compareTo(Packet other) {
         if (this.isSingle() && other.isSingle()) {
-            Integer leftInteger = this.getInteger();
+            Integer leftInteger = getInteger();
             Integer rightInteger = other.getInteger();
             return leftInteger.compareTo(rightInteger);
-        } else if (!this.isSingle() && !other.isSingle()) {
+        } else if (!isSingle() && !other.isSingle()) {
             int i = 0;
-            while (i < this.getPackets().size() && i < other.getPackets().size()) {
-                int comparison = this.getPackets().get(i).compareTo(other.getPackets().get(i));
+            while (i < getPackets().size() && i < other.getPackets().size()) {
+                int comparison = getPackets().get(i).compareTo(other.getPackets().get(i));
                 if (comparison < 0) {
                     return -1;
                 } else if (comparison > 0) {
                     return 1;
+                } else {
+                    i++;
                 }
-                i++;
             }
-            if (i == this.getPackets().size() && i < other.getPackets().size()) {
+            if (i == getPackets().size() && i < other.getPackets().size()) {
                 return -1;
-            } else if (i == other.getPackets().size() && i < this.getPackets().size()) {
+            } else if (i == other.getPackets().size() && i < getPackets().size()) {
                 return 1;
             } else {
                 return 0;
             }
-        } else if (this.isSingle() && !other.isSingle()) {
+        } else if (isSingle() && !other.isSingle()) {
             Packet packet = new Packet(new ArrayList<>());
-            packet.add(new Packet(this.getInteger()));
+            packet.add(new Packet(getInteger()));
             return packet.compareTo(other);
         } else {
             Packet packet = new Packet(new ArrayList<>());
             packet.add(new Packet(other.getInteger()));
-            return this.compareTo(packet);
+            return compareTo(packet);
         }
     }
 
