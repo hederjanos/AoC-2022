@@ -11,7 +11,7 @@ public class Cave {
 
     private final Set<Coordinate> rocks;
     private final int[] borders;
-    private Set<Coordinate> sands;
+    private final Set<Coordinate> sands;
 
     public Cave(List<String> puzzle) {
         rocks = initRocks((puzzle));
@@ -86,18 +86,21 @@ public class Cave {
         return minmax;
     }
 
-    public int simulate() {
+    public int simulateFalling(boolean withFloor) {
         Coordinate fallenSand;
         do {
-            fallenSand = fallOneSand(new Coordinate(500, 0));
+            fallenSand = fallOneSand(new Coordinate(500, 0), withFloor);
             if (fallenSand != null) {
                 sands.add(fallenSand);
+                if (fallenSand.equals(new Coordinate(500, 0))) {
+                    break;
+                }
             }
         } while (fallenSand != null);
         return sands.size();
     }
 
-    public Coordinate fallOneSand(Coordinate sand) {
+    private Coordinate fallOneSand(Coordinate sand, boolean withFloor) {
         boolean flowsOut = false;
         Direction[] possibleDirection = new Direction[]{Direction.DOWN, Direction.DOWN_LEFT, Direction.DOWN_RIGHT};
         boolean isFalling = true;
@@ -109,7 +112,12 @@ public class Cave {
                 Coordinate newSand = new Coordinate(x, y);
                 if (!rocks.contains(newSand) && !sands.contains(newSand)) {
                     if (!isInsideCave(newSand)) {
-                        flowsOut = true;
+                        if (!withFloor) {
+                            flowsOut = true;
+                        } else if (!isAtFloor(newSand)) {
+                            trial = true;
+                            sand = sand.moveByDirection(direction);
+                        }
                         break;
                     }
                     trial = true;
@@ -127,6 +135,10 @@ public class Cave {
     private boolean isInsideCave(Coordinate coordinate) {
         return coordinate.getX() <= borders[1] && coordinate.getX() >= borders[0]
                && coordinate.getY() <= borders[3] && coordinate.getY() >= borders[2];
+    }
+
+    private boolean isAtFloor(Coordinate coordinate) {
+        return coordinate.getY() == borders[3] + 2;
     }
 
     @Override
