@@ -10,7 +10,7 @@ public class Packet implements Comparable<Packet> {
     private List<Packet> packets;
     private Integer integer;
 
-    public static Packet parseNumber(String number) {
+    public static Packet parseAPacket(String number) {
         Deque<Packet> packets = new ArrayDeque<>();
         Packet root = new Packet(new ArrayList<>());
         packets.push(root);
@@ -23,7 +23,15 @@ public class Packet implements Comparable<Packet> {
                 currentPacket.add(nestedPacket);
                 packets.push(nestedPacket);
             } else if (Character.isDigit(c)) {
-                currentPacket.add(new Packet(Character.getNumericValue(c)));
+                StringBuilder sb = new StringBuilder();
+                int j = i;
+                while (j < number.length() && Character.isDigit(number.charAt(j))) {
+                    sb.append(number.charAt(j));
+                    j++;
+                }
+                i = j - 1;
+                Integer integer = Integer.parseInt(sb.toString());
+                currentPacket.add(new Packet(integer));
             } else if (c == ']') {
                 packets.pop();
             }
@@ -57,7 +65,7 @@ public class Packet implements Comparable<Packet> {
 
     @Override
     public int compareTo(Packet other) {
-        if (this.isSingle() && other.isSingle()) {
+        if (isSingle() && other.isSingle()) {
             Integer leftInteger = getInteger();
             Integer rightInteger = other.getInteger();
             return leftInteger.compareTo(rightInteger);

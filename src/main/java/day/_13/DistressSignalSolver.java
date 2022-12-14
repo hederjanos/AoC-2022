@@ -14,7 +14,7 @@ public class DistressSignalSolver extends Solver<Integer> {
         super(filename);
         packets = puzzle.stream()
                 .filter(line -> !line.isEmpty())
-                .map(Packet::parseNumber)
+                .map(Packet::parseAPacket)
                 .collect(Collectors.toList());
     }
 
