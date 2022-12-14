@@ -1,6 +1,7 @@
 package day._14;
 
 import util.coordinate.Coordinate;
+import util.coordinate.Direction;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -10,10 +11,12 @@ public class Cave {
 
     private final Set<Coordinate> rocks;
     private final int[] borders;
+    private Set<Coordinate> sands;
 
     public Cave(List<String> puzzle) {
         rocks = initRocks((puzzle));
         borders = determineBorders();
+        sands = new HashSet<>();
     }
 
     private Set<Coordinate> initRocks(List<String> puzzle) {
@@ -67,7 +70,7 @@ public class Cave {
         int[] minmax = new int[4];
         minmax[0] = Integer.MAX_VALUE;
         minmax[1] = Integer.MIN_VALUE;
-        minmax[2] = Integer.MAX_VALUE;
+        minmax[2] = 0;
         minmax[3] = Integer.MIN_VALUE;
         rocks.forEach(coordinate -> {
             if (coordinate.getX() < minmax[0]) {
@@ -76,22 +79,61 @@ public class Cave {
             if (coordinate.getX() > minmax[1]) {
                 minmax[1] = coordinate.getX();
             }
-            if (coordinate.getY() < minmax[2]) {
-                minmax[2] = coordinate.getY();
-            }
             if (coordinate.getY() > minmax[3]) {
                 minmax[3] = coordinate.getY();
             }
         });
-        System.out.println(Arrays.toString(minmax));
         return minmax;
+    }
+
+    public int simulate() {
+        Coordinate fallenSand;
+        do {
+            fallenSand = fallOneSand(new Coordinate(500, 0));
+            if (fallenSand != null) {
+                sands.add(fallenSand);
+            }
+        } while (fallenSand != null);
+        return sands.size();
+    }
+
+    public Coordinate fallOneSand(Coordinate sand) {
+        boolean flowsOut = false;
+        Direction[] possibleDirection = new Direction[]{Direction.DOWN, Direction.DOWN_LEFT, Direction.DOWN_RIGHT};
+        boolean isFalling = true;
+        while (isFalling) {
+            boolean trial = false;
+            for (Direction direction : possibleDirection) {
+                int x = sand.getX() + direction.getX();
+                int y = sand.getY() + direction.getY();
+                Coordinate newSand = new Coordinate(x, y);
+                if (!rocks.contains(newSand) && !sands.contains(newSand)) {
+                    if (!isInsideCave(newSand)) {
+                        flowsOut = true;
+                        break;
+                    }
+                    trial = true;
+                    sand = sand.moveByDirection(direction);
+                    break;
+                }
+            }
+            if (!trial) {
+                isFalling = false;
+            }
+        }
+        return !flowsOut ? sand : null;
+    }
+
+    private boolean isInsideCave(Coordinate coordinate) {
+        return coordinate.getX() <= borders[1] && coordinate.getX() >= borders[0]
+               && coordinate.getY() <= borders[3] && coordinate.getY() >= borders[2];
     }
 
     @Override
     public String toString() {
         return IntStream.rangeClosed(borders[2], borders[3])
                 .mapToObj(i -> IntStream.rangeClosed(borders[0], borders[1])
-                        .mapToObj(j -> rocks.contains(new Coordinate(j, i)) ? "#" : ".")
+                        .mapToObj(j -> rocks.contains(new Coordinate(j, i)) ? "#" : sands.contains(new Coordinate(j, i)) ? "o" : ".")
                         .collect(Collectors.joining()))
                 .collect(Collectors.joining(System.lineSeparator()));
     }
