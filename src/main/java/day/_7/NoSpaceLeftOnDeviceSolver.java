@@ -19,33 +19,42 @@ public class NoSpaceLeftOnDeviceSolver extends Solver<Long> {
         Directory directory = null;
         for (String line : puzzle) {
             if (line.startsWith("$")) {
-                String[] command = line.substring(2).split(" ");
-                if (command[0].equals("cd")) {
-                    if (command[1].equals("/")) {
-                        directory = new Directory("/");
-                        files.push(directory);
-                    } else if (command[1].equals("..")) {
-                        files.pop();
-                    } else {
-                        Directory currentDir = (Directory) files.peek();
-                        files.push(findDirectory(currentDir, command[1]));
-                    }
-                }
+                directory = parseDirectory(files, directory, line);
             } else {
-                String[] file = line.split(" ");
-                Directory currentDir = (Directory) files.peek();
-                if (line.startsWith("dir")) {
-                    Directory newDir = new Directory(file[1]);
-                    newDir.setParent(currentDir);
-                    currentDir.addDataUnit(newDir);
-                } else {
-                    File newFile = new File(Long.parseLong(file[0]), file[1]);
-                    newFile.setParent(currentDir);
-                    currentDir.addDataUnit(newFile);
-                }
+                parseDataUnits(files, line);
             }
         }
         return directory;
+    }
+
+    private Directory parseDirectory(Deque<DataUnit> files, Directory directory, String line) {
+        String[] command = line.substring(2).split(" ");
+        if (command[0].equals("cd")) {
+            if (command[1].equals("/")) {
+                directory = new Directory("/");
+                files.push(directory);
+            } else if (command[1].equals("..")) {
+                files.pop();
+            } else {
+                Directory currentDir = (Directory) files.peek();
+                files.push(findDirectory(currentDir, command[1]));
+            }
+        }
+        return directory;
+    }
+
+    private void parseDataUnits(Deque<DataUnit> files, String line) {
+        String[] file = line.split(" ");
+        Directory currentDir = (Directory) files.peek();
+        if (line.startsWith("dir")) {
+            Directory newDir = new Directory(file[1]);
+            newDir.setParent(currentDir);
+            currentDir.addDataUnit(newDir);
+        } else {
+            File newFile = new File(Long.parseLong(file[0]), file[1]);
+            newFile.setParent(currentDir);
+            currentDir.addDataUnit(newFile);
+        }
     }
 
     private Directory findDirectory(Directory current, String name) {

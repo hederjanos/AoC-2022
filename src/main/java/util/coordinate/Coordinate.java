@@ -80,41 +80,46 @@ public class Coordinate {
         return adjacentCoordinates;
     }
 
-    public Set<Coordinate> getCoordinatesInLineBetweenCoordinates(Coordinate end) {
+    public Set<Coordinate> getCoordinatesInLineBetweenWith(Coordinate end) {
         Set<Coordinate> coordinatesInLine = new HashSet<>();
         coordinatesInLine.add(this);
         coordinatesInLine.add(end);
         if (this.getX() == end.getX()) {
-            createCoordinatesInVerticalDirection(this, end, coordinatesInLine);
+            coordinatesInLine.addAll(createCoordinatesInVerticalDirection(this, end));
         } else if (this.getY() == end.getY()) {
-            createCoordinatesInHorizontalDirection(this, end, coordinatesInLine);
+            coordinatesInLine.addAll(createCoordinatesInHorizontalDirection(this, end));
         } else if ((this.getX() < end.getX() && this.getY() < end.getY()) || (this.getX() > end.getX() && this.getY() > end.getY())) {
-            createCoordinatesInFallingDiagonal(this, end, coordinatesInLine);
+            coordinatesInLine.addAll(createCoordinatesInFallingDiagonal(this, end));
         } else if ((this.getX() < end.getX() && this.getY() > end.getY()) || (this.getX() > end.getX() && this.getY() < end.getY())) {
-            createCoordinatesInGrowingDiagonal(this, end, coordinatesInLine);
+            coordinatesInLine.addAll(createCoordinatesInGrowingDiagonal(this, end));
         }
         return coordinatesInLine;
     }
 
-    private void createCoordinatesInVerticalDirection(Coordinate start, Coordinate end, Set<Coordinate> coordinatesInLine) {
+    private Set<Coordinate> createCoordinatesInVerticalDirection(Coordinate start, Coordinate end) {
+        Set<Coordinate> coordinatesInLine = new HashSet<>();
         int head = Math.min(start.getY(), end.getY());
         Coordinate newEnd = (end.getY() == head) ? start : end;
         while (head < newEnd.getY()) {
             coordinatesInLine.add(new Coordinate(newEnd.getX(), head + 1));
             head++;
         }
+        return coordinatesInLine;
     }
 
-    private void createCoordinatesInHorizontalDirection(Coordinate start, Coordinate end, Set<Coordinate> coordinatesInLine) {
+    private Set<Coordinate> createCoordinatesInHorizontalDirection(Coordinate start, Coordinate end) {
+        Set<Coordinate> coordinatesInLine = new HashSet<>();
         int head = Math.min(start.getX(), end.getX());
         Coordinate newEnd = (end.getX() == head) ? start : end;
         while (head < newEnd.getX()) {
             coordinatesInLine.add(new Coordinate(head + 1, newEnd.getY()));
             head++;
         }
+        return coordinatesInLine;
     }
 
-    private void createCoordinatesInFallingDiagonal(Coordinate start, Coordinate end, Set<Coordinate> coordinatesInLine) {
+    private Set<Coordinate> createCoordinatesInFallingDiagonal(Coordinate start, Coordinate end) {
+        Set<Coordinate> coordinatesInLine = new HashSet<>();
         Coordinate head = (start.getX() < end.getX()) ? start : end;
         Coordinate tail = (start.getX() > end.getX()) ? start : end;
         while (head.getX() != tail.getX() - 1) {
@@ -122,9 +127,11 @@ public class Coordinate {
             coordinatesInLine.add(newHead);
             head = newHead;
         }
+        return coordinatesInLine;
     }
 
-    private void createCoordinatesInGrowingDiagonal(Coordinate start, Coordinate end, Set<Coordinate> coordinatesInLine) {
+    private Set<Coordinate> createCoordinatesInGrowingDiagonal(Coordinate start, Coordinate end) {
+        Set<Coordinate> coordinatesInLine = new HashSet<>();
         Coordinate head = (start.getX() < end.getX() && start.getY() > end.getY()) ? start : end;
         Coordinate tail = (start.getX() > end.getX() && start.getY() < end.getY()) ? start : end;
         while (head.getX() != tail.getX() - 1) {
@@ -132,6 +139,7 @@ public class Coordinate {
             coordinatesInLine.add(newHead);
             head = newHead;
         }
+        return coordinatesInLine;
     }
 
     public boolean isInHorizontalOrVerticalLineWith(Coordinate end) {

@@ -31,39 +31,12 @@ public class Cave {
         List<Coordinate> boundaries = Arrays.stream(coordinates).map(Coordinate::new).collect(Collectors.toList());
         return IntStream.range(0, boundaries.size() - 1)
                 .mapToObj(i -> {
-                    Set<Coordinate> rockUnits = new HashSet<>();
                     Coordinate start = boundaries.get(i);
                     Coordinate end = boundaries.get(i + 1);
-                    rockUnits.add(start);
-                    rockUnits.add(end);
-                    rockUnits.addAll(createCoordinatesInVerticalDirection(start, end));
-                    rockUnits.addAll(createCoordinatesInHorizontalDirection(start, end));
-                    return rockUnits;
+                    return (Set<Coordinate>) new HashSet<>(start.getCoordinatesInLineBetweenWith(end));
                 })
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-    }
-
-    private Set<Coordinate> createCoordinatesInVerticalDirection(Coordinate start, Coordinate end) {
-        Set<Coordinate> coordinatesInLine = new HashSet<>();
-        int head = Math.min(start.getY(), end.getY());
-        Coordinate newEnd = (end.getY() == head) ? start : end;
-        while (head < newEnd.getY()) {
-            coordinatesInLine.add(new Coordinate(newEnd.getX(), head + 1));
-            head++;
-        }
-        return coordinatesInLine;
-    }
-
-    private Set<Coordinate> createCoordinatesInHorizontalDirection(Coordinate start, Coordinate end) {
-        Set<Coordinate> coordinatesInLine = new HashSet<>();
-        int head = Math.min(start.getX(), end.getX());
-        Coordinate newEnd = (end.getX() == head) ? start : end;
-        while (head < newEnd.getX()) {
-            coordinatesInLine.add(new Coordinate(head + 1, newEnd.getY()));
-            head++;
-        }
-        return coordinatesInLine;
     }
 
     private int[] determineBorders() {
@@ -102,32 +75,28 @@ public class Cave {
 
     private Coordinate fallOneSand(Coordinate sand, boolean withFloor) {
         boolean flowsOut = false;
-        Direction[] possibleDirection = new Direction[]{Direction.DOWN, Direction.DOWN_LEFT, Direction.DOWN_RIGHT};
+        Direction[] possibleDirs = new Direction[]{Direction.DOWN, Direction.DOWN_LEFT, Direction.DOWN_RIGHT};
         boolean isFalling = true;
         while (isFalling) {
             boolean trial = false;
-            for (Direction direction : possibleDirection) {
-                int x = sand.getX() + direction.getX();
-                int y = sand.getY() + direction.getY();
-                Coordinate newSand = new Coordinate(x, y);
+            for (Direction dir : possibleDirs) {
+                Coordinate newSand = new Coordinate(sand.getX() + dir.getX(), sand.getY() + dir.getY());
                 if (!rocks.contains(newSand) && !sands.contains(newSand)) {
                     if (!isInsideCave(newSand)) {
                         if (!withFloor) {
                             flowsOut = true;
                         } else if (!isAtFloor(newSand)) {
                             trial = true;
-                            sand = sand.moveByDirection(direction);
+                            sand = sand.moveByDirection(dir);
                         }
                         break;
                     }
                     trial = true;
-                    sand = sand.moveByDirection(direction);
+                    sand = sand.moveByDirection(dir);
                     break;
                 }
             }
-            if (!trial) {
-                isFalling = false;
-            }
+            if (!trial) isFalling = false;
         }
         return !flowsOut ? sand : null;
     }
@@ -145,9 +114,19 @@ public class Cave {
     public String toString() {
         return IntStream.rangeClosed(borders[2], borders[3])
                 .mapToObj(i -> IntStream.rangeClosed(borders[0], borders[1])
-                        .mapToObj(j -> rocks.contains(new Coordinate(j, i)) ? "#" : sands.contains(new Coordinate(j, i)) ? "o" : ".")
+                        .mapToObj(j -> getPrintAt(i, j))
                         .collect(Collectors.joining()))
                 .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private String getPrintAt(int i, int j) {
+        String print;
+        if (rocks.contains(new Coordinate(j, i))) {
+            print = "#";
+        } else {
+            print = sands.contains(new Coordinate(j, i)) ? "o" : ".";
+        }
+        return print;
     }
 
 }
