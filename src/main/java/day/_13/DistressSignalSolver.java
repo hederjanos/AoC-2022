@@ -27,7 +27,19 @@ public class DistressSignalSolver extends Solver<Integer> {
 
     @Override
     protected Integer solvePartTwo() {
-        return null;
+        Packet firstDivider = Packet.parseAPacket("[[2]]");
+        Packet secondDivider = Packet.parseAPacket("[[6]]");
+        int lowerThanFirstDivider = 0;
+        int greaterThanSecondDivider = 0;
+        for (Packet packet : packets) {
+            if (packet.compareTo(firstDivider) < 0) {
+                lowerThanFirstDivider++;
+            }
+            if ((packet.compareTo(secondDivider) < 0)) {
+                greaterThanSecondDivider++;
+            }
+        }
+        return (lowerThanFirstDivider + 1) * (greaterThanSecondDivider + 2);
     }
 
 }
