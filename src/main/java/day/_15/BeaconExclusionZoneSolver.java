@@ -2,8 +2,13 @@ package day._15;
 
 import util.common.Solver;
 
+import java.util.Objects;
+import java.util.stream.IntStream;
+
 public class BeaconExclusionZoneSolver extends Solver<Long> {
 
+    public static final int MIN_DIMENSION = 0;
+    public static final int MAX_DIMENSION = 4_000_000;
     private final TunnelNetwork tunnelNetwork;
 
     public BeaconExclusionZoneSolver(String filename) {
@@ -13,24 +18,17 @@ public class BeaconExclusionZoneSolver extends Solver<Long> {
 
     @Override
     protected Long solvePartOne() {
-        return tunnelNetwork.calculatePositionsNotContainingBeaconAtHorizontal(2000000);
+        return tunnelNetwork.getNumberOfPositionsWithoutBeaconAtHorizontal(2_000_000);
     }
 
     @Override
     protected Long solvePartTwo() {
-//        for (int i = 0; i <= 4_000_000; i++) {
-//
-//            int fuckIt = tunnelNetwork.fuckIt(i, 0, 4000000);
-//            if (fuckIt != 4_000_000) {
-//                System.out.println(i);
-//                System.out.println(fuckIt);
-//            }
-//            tunnelNetwork.fuckIt(3363767, 0, 4000000);
-//        }
-        long i = 3157535L * 4000000 + 3363767;
-        tunnelNetwork.fuckIt(3363767, 0, 4000000);
-        System.out.println(i);
-        return null;
+        return IntStream.rangeClosed(MIN_DIMENSION, MAX_DIMENSION)
+                .mapToObj(i -> tunnelNetwork.calculateBeaconCoordinateAtHorizontal(i, MIN_DIMENSION, MAX_DIMENSION))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(beacon -> (long) beacon.getX() * MAX_DIMENSION + beacon.getY())
+                .orElse(null);
     }
 
 }
