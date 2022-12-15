@@ -1,9 +1,6 @@
 package util.coordinate;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Coordinate {
 
@@ -181,6 +178,21 @@ public class Coordinate {
         return adjusted;
     }
 
+    public int getManhattanDistanceFrom(Coordinate coordinate) {
+        return Math.abs(getX() - coordinate.getX()) + Math.abs(getY() - coordinate.getY());
+    }
+
+    public int getManhattanDistanceFromHorizontal(int y) {
+        return Math.abs(getY() - y);
+    }
+
+    public List<Coordinate> calculateMinAndMaxExcisedCoordinatesFromHorizontal(int y, int distance) {
+        List<Coordinate> coordinates = new ArrayList<>();
+        int distanceFromLine = getManhattanDistanceFromHorizontal(y);
+        coordinates.add(new Coordinate(getX() - (distance - distanceFromLine), y));
+        coordinates.add(new Coordinate(getX() + (distance - distanceFromLine), y));
+        return coordinates;
+    }
 
     public static Comparator<Coordinate> getXOrderComparator() {
         return new XOrder();

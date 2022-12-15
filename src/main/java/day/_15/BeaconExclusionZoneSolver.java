@@ -9,12 +9,11 @@ public class BeaconExclusionZoneSolver extends Solver<Integer> {
     public BeaconExclusionZoneSolver(String filename) {
         super(filename);
         tunnelNetwork = new TunnelNetwork(puzzle);
-        System.out.println(tunnelNetwork);
     }
 
     @Override
     protected Integer solvePartOne() {
-        return null;
+        return tunnelNetwork.calculatePositionsNotContainingBeaconAtHorizontal(2000000);
     }
 
     @Override

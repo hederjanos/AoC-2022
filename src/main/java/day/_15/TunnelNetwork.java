@@ -6,23 +6,19 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class TunnelNetwork {
 
-    private final Map<Coordinate, Coordinate> sensors;
-    private final int[] borders;
+    private final Map<Coordinate, Sensor> sensors;
 
     public TunnelNetwork(List<String> puzzle) {
         sensors = initSensors((puzzle));
-        borders = determineBorders();
-        System.out.println(Arrays.toString(borders));
     }
 
-    private Map<Coordinate, Coordinate> initSensors(List<String> puzzle) {
+    private Map<Coordinate, Sensor> initSensors(List<String> puzzle) {
         return puzzle.stream()
                 .map(this::extractCoordinatesFromLine)
-                .collect(Collectors.toMap(pair -> pair.get(0), pair -> pair.get(1)));
+                .collect(Collectors.toMap(pair -> pair.get(0), pair -> new Sensor(pair.get(0), pair.get(1))));
     }
 
     private List<Coordinate> extractCoordinatesFromLine(String line) {
@@ -40,59 +36,46 @@ public class TunnelNetwork {
         return coordinates;
     }
 
-    private int[] determineBorders() {
-        int[] minmax = new int[4];
-        minmax[0] = Integer.MAX_VALUE;
-        minmax[1] = Integer.MIN_VALUE;
-        minmax[2] = Integer.MAX_VALUE;
-        minmax[3] = Integer.MIN_VALUE;
-
-        sensors.forEach((key, value) -> {
-            if (key.getX() < minmax[0]) {
-                minmax[0] = key.getX();
-            }
-            if (key.getX() > minmax[1]) {
-                minmax[1] = key.getX();
-            }
-            if (key.getY() < minmax[2]) {
-                minmax[2] = key.getY();
-            }
-            if (key.getY() > minmax[3]) {
-                minmax[3] = key.getY();
-            }
-            if (value.getX() < minmax[0]) {
-                minmax[0] = value.getX();
-            }
-            if (value.getX() > minmax[1]) {
-                minmax[1] = value.getX();
-            }
-            if (value.getY() < minmax[2]) {
-                minmax[2] = value.getY();
-            }
-            if (value.getY() > minmax[3]) {
-                minmax[3] = value.getY();
-            }
-        });
-        return minmax;
+    public int calculatePositionsNotContainingBeaconAtHorizontal(int y) {
+        Map<Coordinate, Sensor> filteredSensors = filterSensorsByDistanceFromHorizontal(y);
+        List<HorizontalLineSegment> lineSegments = calculateLineSegments(filteredSensors, y);
+        List<HorizontalLineSegment> reducedLineSegments = reduceLineSegments(lineSegments);
+        return reducedLineSegments.stream()
+                .map(lineSegment -> lineSegment.getEnd().getX() - lineSegment.getStart().getX())
+                .reduce(0, Integer::sum);
     }
 
-    @Override
-    public String toString() {
-        return IntStream.rangeClosed(borders[2], borders[3])
-                .mapToObj(i -> IntStream.rangeClosed(borders[0], borders[1])
-                        .mapToObj(j -> getPrintAt(i, j))
-                        .collect(Collectors.joining()))
-                .collect(Collectors.joining(System.lineSeparator()));
+    private Map<Coordinate, Sensor> filterSensorsByDistanceFromHorizontal(int y) {
+        return sensors.entrySet().stream()
+                .filter(entry -> entry.getKey().getManhattanDistanceFromHorizontal(y) <= entry.getValue().getDistance())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private String getPrintAt(int i, int j) {
-        String print;
-        if (sensors.containsKey(new Coordinate(j, i))) {
-            print = "S";
-        } else {
-            print = sensors.containsValue(new Coordinate(j, i)) ? "B" : ".";
+    private List<HorizontalLineSegment> calculateLineSegments(Map<Coordinate, Sensor> filteredSensors, int y) {
+        return filteredSensors.entrySet().stream()
+                .map(entry -> {
+                    List<Coordinate> coordinates = entry.getKey().calculateMinAndMaxExcisedCoordinatesFromHorizontal(y, entry.getValue().getDistance());
+                    return new HorizontalLineSegment(coordinates);
+                })
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    private List<HorizontalLineSegment> reduceLineSegments(List<HorizontalLineSegment> lineSegments) {
+        List<HorizontalLineSegment> reducedLineSegments = new ArrayList<>();
+        reducedLineSegments.add(lineSegments.get(0));
+        HorizontalLineSegment current = reducedLineSegments.get(0);
+        for (int i = 1; i < lineSegments.size(); i++) {
+            HorizontalLineSegment newLineSegment = current.createCommonLineSegmentIfOverlapping(lineSegments.get(i));
+            if (newLineSegment != null) {
+                current = newLineSegment;
+                reducedLineSegments.set(reducedLineSegments.size() - 1, current);
+            } else {
+                reducedLineSegments.add(lineSegments.get(i));
+                current = reducedLineSegments.get(reducedLineSegments.size() - 1);
+            }
         }
-        return print;
+        return reducedLineSegments;
     }
 
 }
