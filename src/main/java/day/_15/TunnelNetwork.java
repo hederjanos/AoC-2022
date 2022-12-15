@@ -36,13 +36,14 @@ public class TunnelNetwork {
         return coordinates;
     }
 
-    public int calculatePositionsNotContainingBeaconAtHorizontal(int y) {
+    public Long calculatePositionsNotContainingBeaconAtHorizontal(int y) {
         Map<Coordinate, Sensor> filteredSensors = filterSensorsByDistanceFromHorizontal(y);
         List<HorizontalLineSegment> lineSegments = calculateLineSegments(filteredSensors, y);
         List<HorizontalLineSegment> reducedLineSegments = reduceLineSegments(lineSegments);
         return reducedLineSegments.stream()
                 .map(lineSegment -> lineSegment.getEnd().getX() - lineSegment.getStart().getX())
-                .reduce(0, Integer::sum);
+                .mapToLong(Integer::longValue)
+                .reduce(0L, Long::sum);
     }
 
     private Map<Coordinate, Sensor> filterSensorsByDistanceFromHorizontal(int y) {
@@ -76,6 +77,36 @@ public class TunnelNetwork {
             }
         }
         return reducedLineSegments;
+    }
+
+    public int fuckIt(int y, int from, int to) {
+        Map<Coordinate, Sensor> filteredSensors = filterSensorsByDistanceFromHorizontal(y);
+        List<HorizontalLineSegment> lineSegments = calculateLineSegments(filteredSensors, y);
+        //lineSegments.forEach(System.out::println);
+        List<HorizontalLineSegment> reducedLineSegments = reduceLineSegments(lineSegments);
+
+        //reducedLineSegments.forEach(System.out::println);
+
+        if (reducedLineSegments.size() != 1) {
+            reducedLineSegments = reducedLineSegments.stream().dropWhile(line -> line.getEnd().getX() < from).collect(Collectors.toList());
+            reducedLineSegments = reducedLineSegments.stream().dropWhile(line -> line.getStart().getX() > to).collect(Collectors.toList());
+        }
+
+        HorizontalLineSegment horizontalLineSegment = reducedLineSegments.get(0);
+        HorizontalLineSegment newFirst = horizontalLineSegment.reCalculateFirst(from);
+        reducedLineSegments.set(0, newFirst);
+
+        horizontalLineSegment = reducedLineSegments.get(reducedLineSegments.size() - 1);
+        HorizontalLineSegment newLast = horizontalLineSegment.reCalculateLast(to);
+        reducedLineSegments.set(reducedLineSegments.size() - 1, newLast);
+
+        System.out.println("new");
+        reducedLineSegments.forEach(System.out::println);
+
+
+        return reducedLineSegments.stream()
+                .map(lineSegment -> lineSegment.getEnd().getX() - lineSegment.getStart().getX())
+                .reduce(0, Integer::sum);
     }
 
 }

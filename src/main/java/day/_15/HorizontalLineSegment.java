@@ -61,4 +61,17 @@ public class HorizontalLineSegment implements Comparable<HorizontalLineSegment> 
         return Coordinate.getXOrderComparator().compare(start, o.getStart());
     }
 
+    @Override
+    public String toString() {
+        return "L[" + start + ", " + end + "]";
+    }
+
+    public HorizontalLineSegment reCalculateFirst(int from) {
+        return new HorizontalLineSegment(new Coordinate(from, getStart().getY()), getEnd());
+    }
+
+    public HorizontalLineSegment reCalculateLast(int to) {
+        return new HorizontalLineSegment(getStart(), new Coordinate(to, getEnd().getY()));
+    }
+
 }
