@@ -13,26 +13,31 @@ import java.util.stream.IntStream;
 public class Chamber {
 
     private static final int WIDTH = 7;
+    private static final int START_X = 2;
+    private static final int START_DIFF = 3;
     private static final List<Class<? extends Rock>> ROCK_CLASSES = List.of(
             HorizontalRock.class,
             CrossRock.class,
             LRock.class,
             VerticalRock.class,
             SquareRock.class);
-    private int rockCounter;
+    private long numberOfTotalRocks;
+    private long rockCounter;
     private Rock currentRock;
     private final Set<Coordinate> fallenRocks = new HashSet<>();
+    private final List<Direction> jetPattern;
 
-    public Chamber() {
+    public Chamber(List<Direction> jetPattern) {
         currentRock = instantiateRock();
+        this.jetPattern = jetPattern;
     }
 
     private Rock instantiateRock() {
         Rock rock;
         try {
-            Constructor<?> constructor = ROCK_CLASSES.get(rockCounter).getConstructor(Coordinate.class);
+            Constructor<?> constructor = ROCK_CLASSES.get((int) rockCounter).getConstructor(Coordinate.class);
             int initY = getHeightOfFallenRocks();
-            rock = (Rock) constructor.newInstance(new Coordinate(2, initY - 3));
+            rock = (Rock) constructor.newInstance(new Coordinate(START_X, initY - START_DIFF));
             return rock;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
@@ -47,50 +52,15 @@ public class Chamber {
         return fallenRocks.stream().min(Comparator.comparingInt(Coordinate::getY)).map(Coordinate::getY).orElseThrow();
     }
 
-    public void moveRocksTest() {
-        System.out.println(this);
-        System.out.println("        ");
-        System.out.println("--------");
-        System.out.println("        ");
-        int defender = 0;
-        while (defender < 5 && rockCounter < ROCK_CLASSES.size()) {
-            moveOneRock();
-            defender++;
+    public long moveByJetPattern(long counter) {
+        int i = 0;
+        while (numberOfTotalRocks < counter - 1) {
+            Direction direction = jetPattern.get(i % jetPattern.size());
+            move(direction);
+            moveDown();
+            i++;
         }
-    }
-
-    public void moveOneRock() {
-        boolean isMoving;
-        do {
-            isMoving = moveDown();
-            System.out.println(this);
-            System.out.println("        ");
-            System.out.println("--------");
-            System.out.println("        ");
-        } while (isMoving);
-    }
-
-    public boolean moveDown() {
-        boolean rockIsMoving = true;
-        Rock newRock = currentRock;
-        try {
-            newRock = currentRock.getClass().getConstructor(Rock.class).newInstance(currentRock);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        newRock.moveByDirection(Direction.DOWN);
-        if (isRockHitFallenRocks(newRock)) {
-            addRockToFallenRocks(currentRock);
-            currentRock = instantiateRock();
-            rockIsMoving = false;
-        } else if (isRockHitFloor(newRock)) {
-            addRockToFallenRocks(newRock);
-            currentRock = instantiateRock();
-            rockIsMoving = false;
-        } else {
-            currentRock = newRock;
-        }
-        return rockIsMoving;
+        return -1L * (getHeightOfFallenRocks()) + 1;
     }
 
     public boolean move(Direction direction) {
@@ -110,6 +80,25 @@ public class Chamber {
         return rockIsMoving;
     }
 
+    public boolean moveDown() {
+        boolean rockIsMoving = true;
+        Rock newRock = currentRock;
+        try {
+            newRock = currentRock.getClass().getConstructor(Rock.class).newInstance(currentRock);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        newRock.moveByDirection(Direction.DOWN);
+        if (isRockHitFallenRocks(newRock) || isRockHitFloor(newRock)) {
+            addRockToFallenRocks(currentRock);
+            currentRock = instantiateRock();
+            rockIsMoving = false;
+        } else {
+            currentRock = newRock;
+        }
+        return rockIsMoving;
+    }
+
     private boolean isRockHitWall(Rock rock) {
         return rock.getCoordinates().stream()
                 .anyMatch(coordinate -> coordinate.getX() < 0 || coordinate.getX() >= WIDTH);
@@ -117,7 +106,7 @@ public class Chamber {
 
     private boolean isRockHitFloor(Rock rock) {
         return rock.getCoordinates().stream()
-                .anyMatch(coordinate -> coordinate.getY() == 0);
+                .anyMatch(coordinate -> coordinate.getY() > 0);
     }
 
     private boolean isRockHitFallenRocks(Rock rock) {
@@ -127,18 +116,26 @@ public class Chamber {
 
     private void addRockToFallenRocks(Rock rock) {
         fallenRocks.addAll(rock.getCoordinates());
+        numberOfTotalRocks++;
         rockCounter++;
         rockCounter %= ROCK_CLASSES.size();
     }
 
     @Override
     public String toString() {
-        int height = currentRock.getCoordinates().stream().min(Comparator.comparingInt(Coordinate::getY)).map(Coordinate::getY).orElseThrow();
-        return IntStream.rangeClosed(0, -1 * height)
+        int height = getMaxVerticalPositionOfCurrent();
+        return IntStream.rangeClosed(0, -1 * getMaxVerticalPositionOfCurrent())
                 .mapToObj(i -> IntStream.range(0, WIDTH)
                         .mapToObj(j -> getPrintAt(i + height, j))
                         .collect(Collectors.joining()))
                 .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private int getMaxVerticalPositionOfCurrent() {
+        return currentRock.getCoordinates().stream()
+                .min(Comparator.comparingInt(Coordinate::getY))
+                .map(Coordinate::getY)
+                .orElseThrow();
     }
 
     private String getPrintAt(int i, int j) {
