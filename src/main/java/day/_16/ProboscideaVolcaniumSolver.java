@@ -9,7 +9,7 @@ public class ProboscideaVolcaniumSolver extends Solver<Integer> {
     public ProboscideaVolcaniumSolver(String filename) {
         super(filename);
         valveSystem = new ValveSystem(puzzle);
-        System.out.println(valveSystem);
+        valveSystem.findMostPressureState();
     }
 
     @Override

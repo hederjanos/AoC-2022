@@ -33,4 +33,9 @@ public class Valve {
         return label.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "V{" + "l: " + label + ", f:" + flowRate + "}";
+    }
+
 }
