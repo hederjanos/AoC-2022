@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 
 public class PyroclasticFlowSolver extends Solver<Long> {
 
+    public static final long VERY_BIG_NUMBER = 1_000_000_000_000L;
     private Chamber chamber;
     private final List<Direction> jetPattern;
 
@@ -31,8 +32,31 @@ public class PyroclasticFlowSolver extends Solver<Long> {
 
     @Override
     protected Long solvePartTwo() {
-        chamber = new Chamber(jetPattern);
-        return null;
+        int firstEnd = IntStream.iterate(chamber.getFlow().size() - 1, i -> i >= 0, i -> i - 1)
+                               .dropWhile(i -> chamber.getFlow().get(i).getReference() != null)
+                               .boxed().findFirst().orElseThrow() + 1;
+        ComplexChamberState complexChamberState = chamber.getFlow().get(firstEnd);
+
+        int numberOfRocksBeforePattern = complexChamberState.getReference().getNumberOfRocks();
+        int heightBeforePattern = complexChamberState.getReference().getHeight();
+
+        int numberOfRocksAfterPattern = complexChamberState.getHeightAndRocks().getNumberOfRocks();
+        int heightAfterPattern = complexChamberState.getHeightAndRocks().getHeight();
+
+        int rocksInCycle = numberOfRocksAfterPattern - numberOfRocksBeforePattern;
+        int heightOfCycle = heightAfterPattern - heightBeforePattern;
+
+        long remainderRocks = (VERY_BIG_NUMBER - numberOfRocksBeforePattern) % rocksInCycle;
+
+        long heightOfFullCycles = (VERY_BIG_NUMBER - (numberOfRocksBeforePattern + remainderRocks)) / rocksInCycle * heightOfCycle;
+
+        long heightAdditionAfterFullCycles = chamber.getFlow().stream()
+                                                     .filter(state -> state.getHeightAndRocks().getNumberOfRocks() == numberOfRocksBeforePattern + remainderRocks)
+                                                     .map(complex -> complex.getHeightAndRocks().getHeight())
+                                                     .findFirst()
+                                                     .orElseThrow() - (long) heightBeforePattern;
+
+        return heightBeforePattern + heightOfFullCycles + heightAdditionAfterFullCycles;
     }
 
 }

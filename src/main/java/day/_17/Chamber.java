@@ -26,6 +26,8 @@ public class Chamber {
     private Rock currentRock;
     private final Set<Coordinate> fallenRocks = new HashSet<>();
     private final List<Direction> jetPattern;
+    private final Map<ChamberState, HeightAndRocks> chamberStateMap = new HashMap<>();
+    private final List<ComplexChamberState> flow = new ArrayList<>();
 
     public Chamber(List<Direction> jetPattern) {
         currentRock = instantiateRock();
@@ -36,7 +38,7 @@ public class Chamber {
         Rock rock;
         try {
             Constructor<?> constructor = ROCK_CLASSES.get((int) rockCounter).getConstructor(Coordinate.class);
-            int initY = getHeightOfFallenRocks();
+            int initY = getMinHeightOfFallenRocks();
             rock = (Rock) constructor.newInstance(new Coordinate(START_X, initY - START_DIFF));
             return rock;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -45,7 +47,7 @@ public class Chamber {
         return null;
     }
 
-    private int getHeightOfFallenRocks() {
+    private int getMinHeightOfFallenRocks() {
         if (fallenRocks.isEmpty()) {
             return 1;
         }
@@ -60,7 +62,11 @@ public class Chamber {
             moveDown();
             i++;
         }
-        return -1L * (getHeightOfFallenRocks()) + 1;
+        return getHeightOfFallenRocks();
+    }
+
+    private long getHeightOfFallenRocks() {
+        return -1L * getMinHeightOfFallenRocks() + 1;
     }
 
     public boolean move(Direction direction) {
@@ -91,6 +97,7 @@ public class Chamber {
         newRock.moveByDirection(Direction.DOWN);
         if (isRockHitFallenRocks(newRock) || isRockHitFloor(newRock)) {
             addRockToFallenRocks(currentRock);
+            updateStates();
             currentRock = instantiateRock();
             rockIsMoving = false;
         } else {
@@ -121,6 +128,29 @@ public class Chamber {
         rockCounter %= ROCK_CLASSES.size();
     }
 
+    private void updateStates() {
+        int heightOfFallenRocks = (int) getHeightOfFallenRocks();
+        List<Integer> heightDifferences = getHeightDifferences(heightOfFallenRocks);
+        ChamberState chamberState = new ChamberState(heightDifferences);
+        if (chamberStateMap.containsKey(chamberState)) {
+            flow.add(new ComplexChamberState(chamberStateMap.get(chamberState), new HeightAndRocks(heightOfFallenRocks, (int) numberOfTotalRocks)));
+        } else {
+            flow.add(new ComplexChamberState(null, new HeightAndRocks(heightOfFallenRocks, (int) numberOfTotalRocks)));
+            chamberStateMap.put(chamberState, new HeightAndRocks(heightOfFallenRocks, (int) numberOfTotalRocks));
+        }
+    }
+
+    private List<Integer> getHeightDifferences(int height) {
+        return IntStream.range(0, WIDTH)
+                .mapToObj(i -> fallenRocks.stream()
+                        .filter(coordinate -> coordinate.getX() == i)
+                        .min(Comparator.comparingInt(Coordinate::getY))
+                        .map(Coordinate::getY)
+                        .map(maxHeightAtCol -> maxHeightAtCol + height)
+                        .orElse(0))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public String toString() {
         int height = getMaxVerticalPositionOfCurrent();
@@ -146,6 +176,10 @@ public class Chamber {
             print = currentRock.getCoordinates().contains(new Coordinate(j, i)) ? "@" : ".";
         }
         return print;
+    }
+
+    public List<ComplexChamberState> getFlow() {
+        return flow;
     }
 
 }
