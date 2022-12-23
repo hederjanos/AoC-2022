@@ -4,17 +4,17 @@ import util.common.Solver;
 
 public class ProboscideaVolcaniumSolver extends Solver<Integer> {
 
-    private ValveSystem valveSystem;
+    private final ValveSystem valveSystem;
 
     public ProboscideaVolcaniumSolver(String filename) {
         super(filename);
         valveSystem = new ValveSystem(puzzle);
-        valveSystem.findMostPressureState();
     }
 
     @Override
     protected Integer solvePartOne() {
-        return null;
+        ValveSystemState mostPressureState = valveSystem.findMostReleasedPressureState();
+        return valveSystem.getPossibleReleasedPressure(mostPressureState);
     }
 
     @Override

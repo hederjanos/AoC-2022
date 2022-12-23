@@ -24,7 +24,7 @@ If I can't solve a challenge in a couple of days, I'll get an idea from the appr
 | 13 | no | own |
 | 14 | yes | own |
 | 15 | yes | own |
-| 16 | no |  |
+| 16 | no | hint |
 | 17 | yes | own |
 | 18 | yes | own |
 | 19 | no |  |
