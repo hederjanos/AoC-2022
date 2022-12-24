@@ -7,12 +7,23 @@ import java.util.stream.Collectors;
 
 public class JobGraph {
 
+    private static final String ADD = "+";
+    private static final String SUB = "-";
+    private static final String MUL = "*";
+    private static final String DIV = "/";
+    private static final String ROOT = "root";
+    private static final String HUMN = "humn";
     private final Map<Integer, AbstractJob> jobs;
     private final Map<Integer, List<Integer>> connections;
 
     public JobGraph(List<String> puzzle) {
         jobs = initJobs(puzzle);
         connections = initConnections(puzzle);
+    }
+
+    public JobGraph(Map<Integer, AbstractJob> copyOfJobs, Map<Integer, List<Integer>> copyOfConnections) {
+        jobs = copyOfJobs;
+        connections = copyOfConnections;
     }
 
     private Map<Integer, AbstractJob> initJobs(List<String> puzzle) {
@@ -27,23 +38,23 @@ public class JobGraph {
                         return new MathJob(label, operation);
                     }
                 })
-                .collect(Collectors.toMap(AbstractJob::hashCode, valve -> valve));
+                .collect(Collectors.toMap(AbstractJob::hashCode, job -> job));
     }
 
     private String extractOperation(String linePart) {
         String operation = "";
         for (int i = 0; i < linePart.length(); i++) {
             if (linePart.charAt(i) == '+') {
-                operation = "+";
+                operation = ADD;
                 break;
             } else if (linePart.charAt(i) == '-') {
-                operation = "-";
+                operation = SUB;
                 break;
             } else if (linePart.charAt(i) == '*') {
-                operation = "*";
+                operation = MUL;
                 break;
             } else if (linePart.charAt(i) == '/') {
-                operation = "/";
+                operation = DIV;
                 break;
             }
         }
@@ -118,21 +129,21 @@ public class JobGraph {
             if (sortedJob instanceof MathJob) {
                 MathJob job = (MathJob) sortedJob;
                 List<AbstractJob> dependencies = connections.get(sortedJob.hashCode()).stream()
-                        .map(jobs::get).
-                        collect(Collectors.toList());
+                        .map(jobs::get)
+                        .collect(Collectors.toList());
                 String operation = job.getOperation();
                 long result;
                 switch (operation) {
-                    case "+":
+                    case ADD:
                         result = dependencies.get(0).getValue() + dependencies.get(1).getValue();
                         break;
-                    case "-":
+                    case SUB:
                         result = dependencies.get(0).getValue() - dependencies.get(1).getValue();
                         break;
-                    case "*":
+                    case MUL:
                         result = dependencies.get(0).getValue() * dependencies.get(1).getValue();
                         break;
-                    case "/":
+                    case DIV:
                         result = dependencies.get(0).getValue() / dependencies.get(1).getValue();
                         break;
                     default:
@@ -142,7 +153,23 @@ public class JobGraph {
                 jobs.put(newJob.hashCode(), newJob);
             }
         }
-        return jobs.get(("root").hashCode()).getValue();
+        return jobs.get(ROOT.hashCode()).getValue();
+    }
+
+    public JobGraph copy() {
+        Map<Integer, AbstractJob> copyOfJobs = new HashMap<>();
+        jobs.forEach((key, value) -> copyOfJobs.put(key, value.copy()));
+        Map<Integer, List<Integer>> copyOfConnections = new HashMap<>();
+        connections.forEach((key, value) -> copyOfConnections.put(key, new ArrayList<>(value)));
+        return new JobGraph(copyOfJobs, copyOfConnections);
+    }
+
+    public void setHuman(long value) {
+        jobs.put(HUMN.hashCode(), new ValueJob(HUMN, value));
+    }
+
+    public void modifyRoot() {
+        jobs.put(ROOT.hashCode(), new MathJob(ROOT, "-"));
     }
 
 }

@@ -6,4 +6,9 @@ public class ValueJob extends AbstractJob {
         super(label, value);
     }
 
+    @Override
+    public ValueJob copy() {
+        return new ValueJob(label, value);
+    }
+
 }

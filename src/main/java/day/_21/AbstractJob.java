@@ -33,4 +33,6 @@ public abstract class AbstractJob {
         return value;
     }
 
+    abstract AbstractJob copy();
+
 }

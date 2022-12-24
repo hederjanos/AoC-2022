@@ -10,7 +10,7 @@ public class MathJob extends AbstractJob {
     }
 
     public MathJob(String label, String operation, long value) {
-        super(label, 0);
+        super(label, 0L);
         this.operation = operation;
         this.value = value;
     }
@@ -21,6 +21,11 @@ public class MathJob extends AbstractJob {
 
     public void setOperation(String operation) {
         this.operation = operation;
+    }
+
+    @Override
+    public MathJob copy() {
+        return new MathJob(label, operation, value);
     }
 
 }

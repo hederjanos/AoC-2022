@@ -15,13 +15,32 @@ public class MonkeyMathSolver extends Solver<Long> {
 
     @Override
     protected Long solvePartOne() {
-        List<AbstractJob> sortedJobs = jobGraph.sort();
-        return jobGraph.resolveJobs(sortedJobs);
+        JobGraph copyGraph = jobGraph.copy();
+        List<AbstractJob> sortedJobs = copyGraph.sort();
+        return copyGraph.resolveJobs(sortedJobs);
     }
 
     @Override
     protected Long solvePartTwo() {
-        return null;
+        long start = 0L;
+        long end = solvePartOne();
+        long mid = start;
+        jobGraph.modifyRoot();
+        while (end - start > 0) {
+            mid = (start + end) / 2;
+            JobGraph copyGraph = jobGraph.copy();
+            copyGraph.setHuman(mid);
+            List<AbstractJob> sortedJobs = copyGraph.sort();
+            long result = copyGraph.resolveJobs(sortedJobs);
+            if (result > 0) {
+                start = mid - 1;
+            } else if (result < 0) {
+                end = mid;
+            } else {
+                break;
+            }
+        }
+        return mid;
     }
 
 }
