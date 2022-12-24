@@ -28,8 +28,8 @@ If I can't solve a challenge in a couple of days, I'll get an idea from the appr
 | 17 | yes | own |
 | 18 | yes | own |
 | 19 | no |  |
-| 20 | no |  |
-| 21 | no |  |
+| 20 | no | own |
+| 21 | no | own |
 | 22 | no |  |
 | 23 | no |  |
 | 24 | no |  |

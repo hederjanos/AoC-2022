@@ -40,14 +40,7 @@ public class ValveSystem {
 
     private Map<Integer, Set<Integer>> initConnections(List<String> puzzle) {
         return puzzle.stream()
-                .map(line -> {
-                    List<String> neighbourLabels = new ArrayList<>();
-                    String[] reportLineParts = line.split("; ");
-                    String label = extractLabels(reportLineParts[0], 2).get(0);
-                    neighbourLabels.add(label);
-                    neighbourLabels.addAll(extractLabels(reportLineParts[1], 2));
-                    return neighbourLabels;
-                })
+                .map(line -> extractLabels(line, 2))
                 .collect(Collectors.toMap(
                         labels -> labels.get(0).hashCode(),
                         labels -> labels.subList(1, labels.size()).stream()
