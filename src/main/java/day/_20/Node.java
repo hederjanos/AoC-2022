@@ -2,23 +2,19 @@ package day._20;
 
 public class Node {
 
-    private int value;
+    private long value;
     private Node previous;
     private Node next;
 
     public Node() {
     }
 
-    public Node(int value) {
+    public Node(long value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public long getValue() {
         return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
     }
 
     public Node getPrevious() {
