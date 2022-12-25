@@ -4,22 +4,23 @@ import util.common.Solver;
 
 public class UnstableDiffusionSolver extends Solver<Integer> {
 
-    private final Grove grove;
+    private Grove grove;
 
     public UnstableDiffusionSolver(String filename) {
         super(filename);
-        grove = new Grove(puzzle);
     }
 
     @Override
     protected Integer solvePartOne() {
+        grove = new Grove(puzzle);
         grove.simulate(10);
         return grove.getNumberOfEmptyCoordinates();
     }
 
     @Override
     protected Integer solvePartTwo() {
-        return null;
+        grove = new Grove(puzzle);
+        return grove.simulate(Integer.MAX_VALUE);
     }
 
 }

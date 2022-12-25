@@ -58,16 +58,19 @@ public class Grove {
         }
     }
 
-    public void simulate(int rounds) {
+    public int simulate(int rounds) {
+        Map<Coordinate, Coordinate> proposedNextPositions;
         int i = 0;
-        while (i < rounds) {
-            getProposedNexPositions(i).forEach((key, value) -> {
+        do {
+            proposedNextPositions = getProposedNexPositions(i);
+            proposedNextPositions.forEach((key, value) -> {
                 elfPositions.remove(key);
                 elfPositions.add(value);
             });
             i++;
-        }
+        } while (i < rounds && !proposedNextPositions.isEmpty());
         elfPositions.forEach(this::refreshBorderPositions);
+        return i;
     }
 
     private Map<Coordinate, Coordinate> getProposedNexPositions(int rounds) {
@@ -77,8 +80,10 @@ public class Grove {
                 .filter(this::hasAnyNeighbours)
                 .forEach(elfPosition -> {
                     Coordinate proposedNextPosition = getProposedNextPosition(rounds, elfPosition);
-                    proposedNextPositions.putIfAbsent(elfPosition, proposedNextPosition);
-                    nextPositionRegister.compute(proposedNextPosition, (k, v) -> v == null ? 1 : v + 1);
+                    if (proposedNextPosition != null) {
+                        proposedNextPositions.putIfAbsent(elfPosition, proposedNextPosition);
+                        nextPositionRegister.compute(proposedNextPosition, (k, v) -> v == null ? 1 : v + 1);
+                    }
                 });
         proposedNextPositions.entrySet().removeIf(entry -> nextPositionRegister.get(entry.getValue()) > 1);
         return proposedNextPositions;
