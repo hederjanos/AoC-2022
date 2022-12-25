@@ -17,8 +17,12 @@ public class GrovePositioningSystemSolver extends Solver<Long> {
 
     @Override
     protected Long solvePartOne() {
-        nodes = parseInput(1);
-        mixInPlace();
+        return solve(1, 1);
+    }
+
+    private long solve(int multiplier, int rounds) {
+        nodes = parseInput(multiplier);
+        IntStream.range(0, rounds).forEach(i -> mixInPlace());
         return getSumOfBorders();
     }
 
@@ -75,9 +79,7 @@ public class GrovePositioningSystemSolver extends Solver<Long> {
 
     @Override
     protected Long solvePartTwo() {
-        nodes = parseInput(DECRYPTION_KEY);
-        IntStream.range(0, 10).forEach(i -> mixInPlace());
-        return getSumOfBorders();
+        return solve(DECRYPTION_KEY, 10);
     }
 
 }
