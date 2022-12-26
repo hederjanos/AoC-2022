@@ -17,7 +17,7 @@ public class Grove {
     private final int[] borders;
     private final Set<Coordinate> elfPositions;
 
-    protected Grove(List<String> puzzle) {
+    public Grove(List<String> puzzle) {
         borders = initBorders();
         elfPositions = IntStream.range(0, puzzle.size())
                 .mapToObj(i -> {
