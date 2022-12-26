@@ -4,6 +4,7 @@ import util.common.Solver;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CampCleanupSolver extends Solver<Integer> {
@@ -26,18 +27,19 @@ public class CampCleanupSolver extends Solver<Integer> {
 
     @Override
     protected Integer solvePartOne() {
+        return solve(SectionPair::isContaining);
+    }
+
+    private Integer solve(Predicate<SectionPair> predicate) {
         return (int) sectionPairs.stream()
-                .map(SectionPair::isContaining)
+                .map(predicate::test)
                 .filter(a -> a)
                 .count();
     }
 
     @Override
     protected Integer solvePartTwo() {
-        return (int) sectionPairs.stream()
-                .map(SectionPair::isOverlapping)
-                .filter(a -> a)
-                .count();
+        return solve(SectionPair::isOverlapping);
     }
 
 }
