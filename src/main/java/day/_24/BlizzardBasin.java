@@ -84,6 +84,7 @@ public class BlizzardBasin {
                 int elapsedTime = currentExpedition.getElapsedTime() + 1;
                 Expedition expedition = new Expedition(neighbour, elapsedTime);
                 if (!expeditionsInProgress.contains(expedition)) {
+                    //TODO maybe blizzard states can be cached
                     Set<Coordinate> currentBlizzards = moveBlizzards(elapsedTime).stream()
                             .map(Blizzard::getCoordinate)
                             .collect(Collectors.toSet());
