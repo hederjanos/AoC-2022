@@ -18,13 +18,13 @@ public class HillClimbingAlgorithmSolver extends Solver<Integer> {
 
     @Override
     protected Integer solvePartOne() {
-        return heightMap.findFewestStepPathFromDefault().getNumberOfSteps();
+        return heightMap.findFewestStepPathFromDefault().orElseThrow().getNumberOfSteps();
     }
 
     @Override
     protected Integer solvePartTwo() {
         return heightMap.collectStartCells().stream()
-                .map(startCell -> heightMap.findFewestStepPathFromStart(startCell).getNumberOfSteps())
+                .map(startCell -> heightMap.findFewestStepPathFromStart(startCell).orElseThrow().getNumberOfSteps())
                 .filter(steps -> steps > 0)
                 .min(Integer::compareTo)
                 .orElseThrow();

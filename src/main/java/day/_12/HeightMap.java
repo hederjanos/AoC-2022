@@ -1,5 +1,6 @@
 package day._12;
 
+import day._24.Expedition;
 import util.coordinate.Coordinate;
 import util.grid.GridCell;
 import util.grid.IntegerGrid;
@@ -38,21 +39,22 @@ public class HeightMap extends IntegerGrid {
                 });
     }
 
-    public PathCell findFewestStepPathFromDefault() {
+    public Optional<PathCell> findFewestStepPathFromDefault() {
         return findFewestStepPathFromStart(start);
     }
 
-    public PathCell findFewestStepPathFromStart(GridCell<Integer> startCell) {
+    public Optional<PathCell> findFewestStepPathFromStart(GridCell<Integer> startCell) {
+        Optional<PathCell> result = Optional.of(new PathCell(startCell.getCoordinate(), 0));
         Set<GridCell<Integer>> visitedCells = new HashSet<>();
-        PathCell solution = new PathCell(startCell.getCoordinate(), 0);
+        PathCell startPath = new PathCell(startCell.getCoordinate(), 0);
         Deque<PathCell> pathCells = new ArrayDeque<>();
-        pathCells.offer(solution);
+        pathCells.offer(startPath);
         while (!pathCells.isEmpty()) {
             PathCell currentPath = pathCells.poll();
             Coordinate currentCoordinate = currentPath.getCoordinate();
             GridCell<Integer> currentCell = board.get(calculateCellIndex(currentCoordinate.getX(), currentCoordinate.getY()));
             if (target.equals(currentCell)) {
-                solution = currentPath;
+                result = Optional.of(currentPath);
                 break;
             }
             for (Coordinate neighbour : currentCoordinate.getOrthogonalAdjacentCoordinates()) {
@@ -66,7 +68,7 @@ public class HeightMap extends IntegerGrid {
                 }
             }
         }
-        return solution;
+        return result;
     }
 
     private boolean isElevationInRange(GridCell<Integer> currentCell, GridCell<Integer> nextCell) {
