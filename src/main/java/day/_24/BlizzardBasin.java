@@ -14,6 +14,8 @@ public class BlizzardBasin {
     private final Coordinate start;
     private final Coordinate target;
     private final Set<Blizzard> blizzards;
+    private final TreeMap<Integer, Set<Blizzard>> blizzardsStates = new TreeMap<>();
+    private final TreeMap<Integer, Set<Coordinate>> occupiedPositions = new TreeMap<>();
 
     public BlizzardBasin(List<String> puzzle) {
         width = puzzle.get(0).length();
@@ -53,20 +55,29 @@ public class BlizzardBasin {
         return new Blizzard(new Coordinate(j, i), direction);
     }
 
-    public Optional<Expedition> findShortestExpedition() {
+    public Optional<Expedition> findShortestExpedition(Expedition from, Coordinate to) {
         Optional<Expedition> result = Optional.empty();
         Set<Expedition> expeditionsInProgress = new HashSet<>();
-        Expedition startExpedition = new Expedition(this.start, 0);
+        refreshBlizzardsStates(from.getElapsedTime());
         Deque<Expedition> expeditions = new ArrayDeque<>();
-        expeditions.offer(startExpedition);
-        expeditionsInProgress.add(startExpedition);
+        expeditions.offer(from);
+        expeditionsInProgress.add(from);
         while (!expeditions.isEmpty()) {
             Expedition currentExpedition = expeditions.poll();
-            if (target.equals(currentExpedition.getCoordinate())) {
-                result = Optional.of(currentExpedition);
-                break;
+            Set<Coordinate> currentBlizzards;
+            if (!occupiedPositions.containsKey(currentExpedition.getElapsedTime())) {
+                Integer lastKey = occupiedPositions.lastKey();
+                while (lastKey < currentExpedition.getElapsedTime()) {
+                    refreshBlizzardsStates(++lastKey);
+                }
             }
-            if (mustWait(expeditions, currentExpedition, expeditionsInProgress)) {
+            currentBlizzards = occupiedPositions.get(currentExpedition.getElapsedTime());
+            if (!currentBlizzards.contains(currentExpedition.getCoordinate())) {
+                if (to.equals(currentExpedition.getCoordinate())) {
+                    result = Optional.of(currentExpedition);
+                    break;
+                }
+                discoverNextPositions(currentExpedition, to, expeditions, expeditionsInProgress);
                 Expedition wait = new Expedition(currentExpedition.getCoordinate(), currentExpedition.getElapsedTime() + 1);
                 if (!expeditionsInProgress.contains(wait)) {
                     expeditions.offer(wait);
@@ -77,26 +88,21 @@ public class BlizzardBasin {
         return result;
     }
 
-    private boolean mustWait(Deque<Expedition> expeditions, Expedition currentExpedition, Set<Expedition> expeditionsInProgress) {
-        boolean mustWait = true;
+    private void refreshBlizzardsStates(int i) {
+        blizzardsStates.put(i, moveBlizzards(i));
+        occupiedPositions.put(i, blizzardsStates.get(i).stream().map(Blizzard::getCoordinate).collect(Collectors.toSet()));
+    }
+
+    private void discoverNextPositions(Expedition currentExpedition, Coordinate to, Deque<Expedition> expeditions, Set<Expedition> expeditionsInProgress) {
         for (Coordinate neighbour : currentExpedition.getCoordinate().getOrthogonalAdjacentCoordinates()) {
-            if (isCoordinateInBounds(neighbour) || neighbour.equals(target)) {
-                int elapsedTime = currentExpedition.getElapsedTime() + 1;
-                Expedition expedition = new Expedition(neighbour, elapsedTime);
+            if (to.equals(neighbour) || isCoordinateInBounds(neighbour)) {
+                Expedition expedition = new Expedition(neighbour, currentExpedition.getElapsedTime() + 1);
                 if (!expeditionsInProgress.contains(expedition)) {
-                    //TODO maybe blizzard states can be cached
-                    Set<Coordinate> currentBlizzards = moveBlizzards(elapsedTime).stream()
-                            .map(Blizzard::getCoordinate)
-                            .collect(Collectors.toSet());
-                    if (!currentBlizzards.contains(neighbour)) {
-                        mustWait = false;
-                        expeditions.offer(expedition);
-                        expeditionsInProgress.add(expedition);
-                    }
+                    expeditions.offer(expedition);
+                    expeditionsInProgress.add(expedition);
                 }
             }
         }
-        return mustWait;
     }
 
     public Set<Blizzard> moveBlizzards(int elapsedTime) {
@@ -154,7 +160,7 @@ public class BlizzardBasin {
         return coordinate.getX() < width - 1 && coordinate.getX() > 0 && coordinate.getY() < height - 1 && coordinate.getY() > 0;
     }
 
-    public String toString(Set<Blizzard> blizzards) {
+    public String toString(int elapsedTime) {
         return IntStream.range(0, height)
                 .mapToObj(i -> IntStream.range(0, width)
                         .mapToObj(j -> {
@@ -165,7 +171,7 @@ public class BlizzardBasin {
                             } else if (!isCoordinateInBounds(coordinate)) {
                                 symbol = "#";
                             } else {
-                                symbol = getBlizzardSymbolOrNothing(blizzards, coordinate);
+                                symbol = getBlizzardSymbolOrNothing(elapsedTime, coordinate);
                             }
                             return symbol;
                         })
@@ -173,9 +179,9 @@ public class BlizzardBasin {
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
-    private String getBlizzardSymbolOrNothing(Set<Blizzard> blizzards, Coordinate coordinate) {
+    private String getBlizzardSymbolOrNothing(int elapsedTime, Coordinate coordinate) {
         String symbol;
-        Set<Blizzard> matches = blizzards.stream()
+        Set<Blizzard> matches = blizzardsStates.get(elapsedTime).stream()
                 .filter(blizzard -> blizzard.getCoordinate().equals(coordinate))
                 .collect(Collectors.toSet());
         if (matches.size() == 1) {
@@ -202,4 +208,11 @@ public class BlizzardBasin {
         return symbol;
     }
 
+    public Coordinate getStart() {
+        return start;
+    }
+
+    public Coordinate getTarget() {
+        return target;
+    }
 }
