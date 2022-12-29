@@ -33,4 +33,4 @@ If I can't solve a challenge in a couple of days, I'll get an idea from the appr
 | 22 | no |  |
 | 23 | no | own |
 | 24 | no | own |
-| 25 | no |  |
+| 25 | no | own |
