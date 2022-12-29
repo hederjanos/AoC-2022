@@ -64,7 +64,7 @@ public class BoilingBouldersSolver extends Solver<Integer> {
         Deque<Coordinate3D> deque = new ArrayDeque<>();
         deque.offer(lavaCubes.stream().findFirst().orElseThrow());
         while (!deque.isEmpty()) {
-            Coordinate3D current = deque.pop();
+            Coordinate3D current = deque.poll();
             for (Coordinate3D neighbour : current.getSideCoordinates()) {
                 if (isInside(neighbour) && !outsideAirCubes.contains(neighbour) && !lavaCubes.contains(neighbour)) {
                     deque.offer(neighbour);

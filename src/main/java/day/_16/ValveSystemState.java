@@ -8,7 +8,7 @@ public class ValveSystemState {
     private final int elapsedTimeInMinute;
     private final int pressurePerMinute;
     private final int releasedPressure;
-    public Set<Valve> openValves;
+    private final Set<Valve> openValves;
 
     public ValveSystemState(Valve valve, int elapsedTimeInMinute, int pressurePerMinute, int releasedPressure, Set<Valve> openValves) {
         this.valve = valve;

@@ -55,7 +55,7 @@ public class ValveSystem {
         ValveSystemState initState = new ValveSystemState(start, 0, 0, 0, new HashSet<>());
         valveSystemStates.offer(initState);
         while (!valveSystemStates.isEmpty()) {
-            ValveSystemState currentState = valveSystemStates.pop();
+            ValveSystemState currentState = valveSystemStates.poll();
             for (Valve valve : findValvesWithFlowRates()) {
                 if (!currentState.getValve().equals(valve)) {
                     // equivalent with minutes to reach here
@@ -118,7 +118,7 @@ public class ValveSystem {
         valveStates.offer(new ValveState(valvePair.getFrom(), 0));
         visitedValves.add(valvePair.getFrom());
         while (!valveStates.isEmpty()) {
-            ValveState current = valveStates.pop();
+            ValveState current = valveStates.poll();
             if (current.getValve().equals(valvePair.getTo())) {
                 shortestPathLength = current.getNumberOfSteps();
                 break;
