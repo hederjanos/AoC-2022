@@ -5,15 +5,15 @@ import java.util.Set;
 public class ValveSystemState {
     
     private final Valve valve;
-    private final int elapsedTimeInMinute;
-    private final int pressurePerMinute;
+    private final int elapsedTime;
+    private final int pressureRate;
     private final int releasedPressure;
     private final Set<Valve> openValves;
 
-    public ValveSystemState(Valve valve, int elapsedTimeInMinute, int pressurePerMinute, int releasedPressure, Set<Valve> openValves) {
+    public ValveSystemState(Valve valve, int elapsedTimeInMinute, int pressureRate, int releasedPressure, Set<Valve> openValves) {
         this.valve = valve;
-        this.elapsedTimeInMinute = elapsedTimeInMinute;
-        this.pressurePerMinute = pressurePerMinute;
+        this.elapsedTime = elapsedTimeInMinute;
+        this.pressureRate = pressureRate;
         this.releasedPressure = releasedPressure;
         this.openValves = openValves;
     }
@@ -22,12 +22,12 @@ public class ValveSystemState {
         return valve;
     }
 
-    public int getElapsedTimeInMinute() {
-        return elapsedTimeInMinute;
+    public int getElapsedTime() {
+        return elapsedTime;
     }
 
-    public int getPressurePerMinute() {
-        return pressurePerMinute;
+    public int getPressureRate() {
+        return pressureRate;
     }
 
     public int getReleasedPressure() {

@@ -10,11 +10,14 @@ public class ValveSystem {
     private final Valve start;
     private final Map<Integer, Valve> valves;
     private final Map<Integer, Set<Integer>> connections;
+    private final Set<Valve> valvesWithFlowRates;
 
     public ValveSystem(List<String> puzzle) {
         valves = initValves(puzzle);
         connections = initConnections(puzzle);
         start = valves.get("AA".hashCode());
+        valvesWithFlowRates = findValvesWithFlowRates();
+        valvesWithFlowRates.add(start);
     }
 
     private Map<Integer, Valve> initValves(List<String> puzzle) {
@@ -49,51 +52,36 @@ public class ValveSystem {
                 );
     }
 
-    public ValveSystemState findMostReleasedPressureState() {
+    private Set<Valve> findValvesWithFlowRates() {
+        return valves.values().stream()
+                .filter(valve -> valve.getFlowRate() != 0)
+                .collect(Collectors.toSet());
+    }
+
+    public Map<ValveCombination, Integer> findValveCombinationsWithMaxPressure(int availableTime) {
+        Map<ValveCombination, Integer> maxPressures = new HashMap<>();
         Map<ValvePair, Integer> shortestPaths = findShortestPaths();
         Deque<ValveSystemState> valveSystemStates = new ArrayDeque<>();
         ValveSystemState initState = new ValveSystemState(start, 0, 0, 0, new HashSet<>());
         valveSystemStates.offer(initState);
         while (!valveSystemStates.isEmpty()) {
             ValveSystemState currentState = valveSystemStates.poll();
-            for (Valve valve : findValvesWithFlowRates()) {
-                if (!currentState.getValve().equals(valve)) {
+            for (Valve valve : valvesWithFlowRates) {
+                if (!currentState.getValve().equals(valve) && !start.equals(valve)) {
                     // equivalent with minutes to reach here
                     int numberOfStepsFromCurrent = shortestPaths.get(new ValvePair(currentState.getValve(), valve));
-                    if (!currentState.getOpenValves().contains(valve) && currentState.getElapsedTimeInMinute() + numberOfStepsFromCurrent < 30) {
-                        valveSystemStates.offer(createState(currentState, valve, numberOfStepsFromCurrent));
+                    if (!currentState.getOpenValves().contains(valve) && currentState.getElapsedTime() + numberOfStepsFromCurrent < availableTime) {
+                        ValveSystemState newState = createState(currentState, valve, numberOfStepsFromCurrent);
+                        valveSystemStates.offer(newState);
+                        refreshValveCombinations(maxPressures, newState, availableTime);
                     }
                 }
             }
-            if (getPossibleReleasedPressure(currentState) > getPossibleReleasedPressure(initState)) {
-                initState = currentState;
-            }
         }
-        return initState;
-    }
-
-    public int getPossibleReleasedPressure(ValveSystemState currentState) {
-        int remainingTimeInMinute = 30 - currentState.getElapsedTimeInMinute();
-        int currentReleasedPressure = currentState.getReleasedPressure();
-        while (remainingTimeInMinute > 0) {
-            currentReleasedPressure += currentState.getPressurePerMinute();
-            remainingTimeInMinute--;
-        }
-        return currentReleasedPressure;
-    }
-
-    private ValveSystemState createState(ValveSystemState current, Valve valve, int numberOfStepsFromCurrent) {
-        int elapsedTimeInMinute = current.getElapsedTimeInMinute() + numberOfStepsFromCurrent + 1;
-        int pressurePerMinute = current.getPressurePerMinute() + valve.getFlowRate();
-        int releasedPressure = current.getReleasedPressure() + (numberOfStepsFromCurrent + 1) * current.getPressurePerMinute();
-        Set<Valve> openValves = new HashSet<>(current.getOpenValves());
-        openValves.add(valve);
-        return new ValveSystemState(valve, elapsedTimeInMinute, pressurePerMinute, releasedPressure, openValves);
+        return maxPressures;
     }
 
     private Map<ValvePair, Integer> findShortestPaths() {
-        Set<Valve> valvesWithFlowRates = findValvesWithFlowRates();
-        valvesWithFlowRates.add(start);
         Map<ValvePair, Integer> shortestPaths = new HashMap<>();
         valvesWithFlowRates
                 .forEach(from -> valvesWithFlowRates.stream()
@@ -103,12 +91,6 @@ public class ValveSystem {
                             shortestPaths.put(valvePair, findShortestPath(valvePair));
                         }));
         return shortestPaths;
-    }
-
-    private Set<Valve> findValvesWithFlowRates() {
-        return valves.values().stream()
-                .filter(valve -> valve.getFlowRate() != 0)
-                .collect(Collectors.toSet());
     }
 
     private int findShortestPath(ValvePair valvePair) {
@@ -140,6 +122,33 @@ public class ValveSystem {
         } else {
             return connections.get(hashCode).stream().map(valves::get).collect(Collectors.toList());
         }
+    }
+
+    private void refreshValveCombinations(Map<ValveCombination, Integer> maxPressures, ValveSystemState newState, int availableTime) {
+        int possibleReleasedPressure = getPossibleReleasedPressure(newState, availableTime);
+        ValveCombination valveCombination = new ValveCombination(newState.getOpenValves());
+        if (!(maxPressures.containsKey(valveCombination) && maxPressures.get(valveCombination) >= possibleReleasedPressure)) {
+            maxPressures.put(valveCombination, possibleReleasedPressure);
+        }
+    }
+
+    private int getPossibleReleasedPressure(ValveSystemState currentState, int availableTime) {
+        int remainingTime = availableTime - currentState.getElapsedTime();
+        int currentReleasedPressure = currentState.getReleasedPressure();
+        while (remainingTime > 0) {
+            currentReleasedPressure += currentState.getPressureRate();
+            remainingTime--;
+        }
+        return currentReleasedPressure;
+    }
+
+    private ValveSystemState createState(ValveSystemState current, Valve valve, int numberOfStepsFromCurrent) {
+        int elapsedTime = current.getElapsedTime() + numberOfStepsFromCurrent + 1;
+        int pressureRate = current.getPressureRate() + valve.getFlowRate();
+        int releasedPressure = current.getReleasedPressure() + (numberOfStepsFromCurrent + 1) * current.getPressureRate();
+        Set<Valve> openValves = new HashSet<>(current.getOpenValves());
+        openValves.add(valve);
+        return new ValveSystemState(valve, elapsedTime, pressureRate, releasedPressure, openValves);
     }
 
     @Override
