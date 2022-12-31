@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class RucksackReOrganizer extends Solver<Integer> {
+public class RucksackReOrganizationSolver extends Solver<Integer> {
 
-    public RucksackReOrganizer(String filename) {
+    public RucksackReOrganizationSolver(String filename) {
         super(filename);
     }
 

@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class MonkeyBusinessSolver extends Solver<Long> {
+public class MonkeyInTheMiddleSolver extends Solver<Long> {
 
     private List<Monkey> monkeys;
 
-    public MonkeyBusinessSolver(String filename) {
+    public MonkeyInTheMiddleSolver(String filename) {
         super(filename);
     }
 
