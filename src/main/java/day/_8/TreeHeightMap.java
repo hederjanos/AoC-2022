@@ -53,9 +53,7 @@ public class TreeHeightMap extends IntegerGrid {
                     break;
                 }
             }
-            newCoordinate = newCoordinate.copy();
-            newCoordinate.setX(newCoordinate.getX() + direction.getX());
-            newCoordinate.setY(newCoordinate.getY() + direction.getY());
+            newCoordinate = newCoordinate.moveByDirection(direction);
         } while (isCoordinateInBounds(newCoordinate));
         return gridCellIsVisibleFromThatDirection;
     }
@@ -87,9 +85,7 @@ public class TreeHeightMap extends IntegerGrid {
                     break;
                 }
             }
-            newCoordinate = newCoordinate.copy();
-            newCoordinate.setX(newCoordinate.getX() + direction.getX());
-            newCoordinate.setY(newCoordinate.getY() + direction.getY());
+            newCoordinate = newCoordinate.moveByDirection(direction);
         } while (isCoordinateInBounds(newCoordinate));
         return numberOfVisibleCells;
     }
