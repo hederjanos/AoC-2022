@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 
 public class MonkeyMap {
 
+    private Coordinate start;
     private Explorer explorer;
     private final Set<Coordinate> walls = new HashSet<>();
     private final Set<Coordinate> tiles = new HashSet<>();
@@ -27,7 +28,8 @@ public class MonkeyMap {
                                             walls.add(coordinate);
                                         } else if (charAt == '.') {
                                             if (explorer == null) {
-                                                explorer = new Explorer(coordinate, Direction.RIGHT);
+                                                start = coordinate;
+                                                resetExplorer();
                                             }
                                             tiles.add(coordinate);
                                         }
@@ -36,17 +38,21 @@ public class MonkeyMap {
                 });
     }
 
-    public int explore(List<Instruction> instructions) {
-        instructions.forEach(this::moveExplorer);
+    public void resetExplorer() {
+        explorer = new Explorer(start, Direction.RIGHT);
+    }
+
+    public int explore(List<Instruction> instructions, boolean inThreeDimension) {
+        instructions.forEach(instruction -> moveExplorer(instruction, inThreeDimension));
         Coordinate coordinate = explorer.getCoordinate();
         return 4 * coordinate.getX() + 1000 * coordinate.getY() + FACING_VALUES[explorer.getDirection().ordinal()];
     }
 
-    private void moveExplorer(Instruction instruction) {
+    private void moveExplorer(Instruction instruction, boolean inThreeDimension) {
         boolean isMoved;
         int numberOfMoves = 0;
         do {
-            isMoved = explorer.move(walls, tiles);
+            isMoved = explorer.move(walls, tiles, inThreeDimension);
             numberOfMoves++;
         } while (isMoved && numberOfMoves < instruction.getNumberOfMoves());
         if (Turn.R.equals(instruction.getTurn())) {

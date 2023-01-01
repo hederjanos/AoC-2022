@@ -33,12 +33,13 @@ public class MonkeyMapSolver extends Solver<Integer> {
 
     @Override
     protected Integer solvePartOne() {
-        return monkeyMap.explore(instructions);
+        return monkeyMap.explore(instructions, false);
     }
 
     @Override
     protected Integer solvePartTwo() {
-        return null;
+        monkeyMap.resetExplorer();
+        return monkeyMap.explore(instructions, true);
     }
 
 }
