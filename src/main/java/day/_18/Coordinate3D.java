@@ -16,7 +16,7 @@ public class Coordinate3D {
         this.z = z;
     }
 
-    public Coordinate3D(Coordinate3D coordinate) {
+    private Coordinate3D(Coordinate3D coordinate) {
         if (coordinate == null) {
             throw new IllegalArgumentException();
         }
@@ -83,11 +83,11 @@ public class Coordinate3D {
         this.x = x;
     }
 
-    public void setY(int y) {
+    private void setY(int y) {
         this.y = y;
     }
 
-    public void setZ(int z) {
+    private void setZ(int z) {
         this.z = z;
     }
 

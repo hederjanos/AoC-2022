@@ -43,11 +43,11 @@ public abstract class Rock {
         return coordinates.stream().map(Coordinate::copy).collect(Collectors.toSet());
     }
 
-    public int[][] getShape() {
+    private int[][] getShape() {
         return shape;
     }
 
-    public int getHeight() {
+    private int getHeight() {
         return shape.length;
     }
 

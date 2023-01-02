@@ -22,7 +22,7 @@ public class DistressSignalSolver extends Solver<Integer> {
     protected Integer solvePartOne() {
         return IntStream.iterate(0, i -> i < packets.size() - 2, i -> i + 2)
                 .map(i -> packets.get(i).compareTo(packets.get(i + 1)) <= 0 ? i / 2 + 1 : 0)
-                .reduce(0, Integer::sum);
+                .sum();
     }
 
     @Override

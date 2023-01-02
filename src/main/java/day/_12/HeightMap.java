@@ -1,6 +1,5 @@
 package day._12;
 
-import day._24.Expedition;
 import util.coordinate.Coordinate;
 import util.grid.GridCell;
 import util.grid.IntegerGrid;
@@ -25,13 +24,14 @@ public class HeightMap extends IntegerGrid {
                     List<Integer> numbers = new ArrayList<>(tokenizer.apply(gridLines.get(i)));
                     IntStream.range(0, width)
                             .forEach(j -> {
-                                GridCell<Integer> cell = new GridCell<>(new Coordinate(j, i), numbers.get(j));
+                                Coordinate coordinate = new Coordinate(j, i);
+                                GridCell<Integer> cell = new GridCell<>(coordinate, numbers.get(j));
                                 if ('S' == cell.getValue()) {
-                                    cell.setValue((int) 'a');
+                                    cell = new GridCell<>(coordinate, (int) 'a');
                                     start = cell;
                                 }
                                 if ('E' == cell.getValue()) {
-                                    cell.setValue((int) 'z');
+                                    cell = new GridCell<>(coordinate, (int) 'z');
                                     target = cell;
                                 }
                                 board.add(cell);

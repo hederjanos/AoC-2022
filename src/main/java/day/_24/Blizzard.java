@@ -16,7 +16,7 @@ public class Blizzard {
     }
 
     public Coordinate getCoordinate() {
-        return coordinate;
+        return coordinate.copy();
     }
 
     public Direction getDirection() {

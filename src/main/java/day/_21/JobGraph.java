@@ -21,7 +21,7 @@ public class JobGraph {
         connections = initConnections(puzzle);
     }
 
-    public JobGraph(Map<Integer, AbstractJob> copyOfJobs, Map<Integer, List<Integer>> copyOfConnections) {
+    private JobGraph(Map<Integer, AbstractJob> copyOfJobs, Map<Integer, List<Integer>> copyOfConnections) {
         jobs = copyOfJobs;
         connections = copyOfConnections;
     }
@@ -44,18 +44,21 @@ public class JobGraph {
     private String extractOperation(String linePart) {
         String operation = "";
         for (int i = 0; i < linePart.length(); i++) {
-            if (linePart.charAt(i) == '+') {
-                operation = ADD;
-                break;
-            } else if (linePart.charAt(i) == '-') {
-                operation = SUB;
-                break;
-            } else if (linePart.charAt(i) == '*') {
-                operation = MUL;
-                break;
-            } else if (linePart.charAt(i) == '/') {
-                operation = DIV;
-                break;
+            switch (linePart.charAt(i)) {
+                case '+':
+                    operation = ADD;
+                    break;
+                case '-':
+                    operation = SUB;
+                    break;
+                case '*':
+                    operation = MUL;
+                    break;
+                case '/':
+                    operation = DIV;
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + linePart.charAt(i));
             }
         }
         return operation;
@@ -112,7 +115,7 @@ public class JobGraph {
         return sortedJobs;
     }
 
-    public Set<AbstractJob> getDependentsOfJob(int hashCode) {
+    private Set<AbstractJob> getDependentsOfJob(int hashCode) {
         AbstractJob job = jobs.get(hashCode);
         if (job == null) {
             throw new IllegalArgumentException();
@@ -164,11 +167,11 @@ public class JobGraph {
         return new JobGraph(copyOfJobs, copyOfConnections);
     }
 
-    public void setHuman(long value) {
+    void setHuman(long value) {
         jobs.put(HUMN.hashCode(), new ValueJob(HUMN, value));
     }
 
-    public void modifyRoot() {
+    void modifyRoot() {
         jobs.put(ROOT.hashCode(), new MathJob(ROOT, "-"));
     }
 

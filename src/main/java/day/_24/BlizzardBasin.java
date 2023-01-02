@@ -105,7 +105,7 @@ public class BlizzardBasin {
         }
     }
 
-    public Set<Blizzard> moveBlizzards(int elapsedTime) {
+    private Set<Blizzard> moveBlizzards(int elapsedTime) {
         return blizzards.stream()
                 .map(blizzard -> moveBlizzard(elapsedTime, blizzard))
                 .collect(Collectors.toSet());

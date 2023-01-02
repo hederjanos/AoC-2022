@@ -83,8 +83,4 @@ public class Monkey {
         return "Monkey " + id + ": " + items.stream().map(Item::toString).collect(Collectors.joining(", "));
     }
 
-    public String toStringWithNumberOfInspections() {
-        return "Monkey " + id + ": " + numberOfInspection;
-    }
-
 }

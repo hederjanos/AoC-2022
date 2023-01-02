@@ -39,27 +39,27 @@ public class Packet implements Comparable<Packet> {
         return --i;
     }
 
-    public Packet(List<Packet> packets) {
+    private Packet(List<Packet> packets) {
         this.packets = packets;
     }
 
-    public Packet(Integer integer) {
+    private Packet(Integer integer) {
         this.integer = integer;
     }
 
-    public Integer getInteger() {
+    private Integer getInteger() {
         return integer;
     }
 
-    public List<Packet> getPackets() {
+    private List<Packet> getPackets() {
         return packets;
     }
 
-    public boolean isSingle() {
+    private boolean isSingle() {
         return integer != null;
     }
 
-    public void add(Packet packet) {
+    private void add(Packet packet) {
         packets.add(packet);
     }
 

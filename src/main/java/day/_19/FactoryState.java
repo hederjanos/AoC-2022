@@ -16,11 +16,11 @@ public class FactoryState {
         return elapsedTime;
     }
 
-    public int[] getInventory() {
+    int[] getInventory() {
         return inventory;
     }
 
-    public int[] getBots() {
+    int[] getBots() {
         return bots;
     }
 

@@ -2,7 +2,7 @@ package day._7;
 
 public class File extends DataUnit {
 
-    private long size;
+    private final long size;
 
     public File(long size, String name) {
         super(name);
@@ -11,10 +11,6 @@ public class File extends DataUnit {
 
     public long getSize() {
         return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
     }
 
 }

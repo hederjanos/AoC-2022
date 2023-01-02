@@ -52,7 +52,7 @@ public class PyroclasticFlowSolver extends Solver<Long> {
 
         long heightAdditionAfterFullCycles = chamber.getFlow().stream()
                                                      .filter(state -> state.getHeightAndRocks().getNumberOfRocks() == numberOfRocksBeforePattern + remainderRocks)
-                                                     .map(complex -> complex.getHeightAndRocks().getHeight())
+                                                     .mapToInt(complex -> complex.getHeightAndRocks().getHeight())
                                                      .findFirst()
                                                      .orElseThrow() - (long) heightBeforePattern;
 

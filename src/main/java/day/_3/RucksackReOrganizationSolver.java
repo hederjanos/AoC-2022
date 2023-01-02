@@ -47,8 +47,8 @@ public class RucksackReOrganizationSolver extends Solver<Integer> {
     protected Integer solvePartTwo() {
         return IntStream.iterate(0, i -> i < puzzle.size(), i -> i + 3)
                 .mapToObj(i -> puzzle.subList(i, i + 3))
-                .map(this::convertGroupItemsToPriority)
-                .reduce(0, Integer::sum);
+                .mapToInt(this::convertGroupItemsToPriority)
+                .sum();
     }
 
     public int convertGroupItemsToPriority(List<String> items) {

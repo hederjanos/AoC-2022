@@ -179,7 +179,7 @@ public class Chamber {
     }
 
     public List<ComplexChamberState> getFlow() {
-        return flow;
+        return new ArrayList<>(flow);
     }
 
 }

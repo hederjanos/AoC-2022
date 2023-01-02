@@ -17,7 +17,16 @@ public class Blueprint {
     }
 
     public int[][] getCosts() {
-       return costs;
+        return copyCosts();
+    }
+
+    private int[][] copyCosts() {
+        int n = costs.length;
+        int[][] copyOfArray = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(costs[i], 0, copyOfArray[i], 0, n);
+        }
+        return copyOfArray;
     }
 
     @Override

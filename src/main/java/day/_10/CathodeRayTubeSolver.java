@@ -36,8 +36,9 @@ public class CathodeRayTubeSolver extends Solver<Integer> {
     @Override
     protected Integer solvePartOne() {
         return IntStream.iterate(20, i -> i <= 220, i -> i + SCREEN_WIDTH)
-                .mapToObj(i -> i * registerValues.get(i))
-                .reduce(0, Integer::sum);
+                .boxed()
+                .mapToInt(i -> i * registerValues.get(i))
+                .sum();
     }
 
     @Override

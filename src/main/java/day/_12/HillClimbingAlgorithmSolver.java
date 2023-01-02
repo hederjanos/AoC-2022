@@ -24,9 +24,9 @@ public class HillClimbingAlgorithmSolver extends Solver<Integer> {
     @Override
     protected Integer solvePartTwo() {
         return heightMap.collectStartCells().stream()
-                .map(startCell -> heightMap.findFewestStepPathFromStart(startCell).orElseThrow().getNumberOfSteps())
+                .mapToInt(startCell -> heightMap.findFewestStepPathFromStart(startCell).orElseThrow().getNumberOfSteps())
                 .filter(steps -> steps > 0)
-                .min(Integer::compareTo)
+                .min()
                 .orElseThrow();
     }
 

@@ -24,15 +24,11 @@ public class GridCell<V> {
     }
 
     public Coordinate getCoordinate() {
-        return coordinate;
+        return coordinate.copy();
     }
 
     public V getValue() {
         return value;
-    }
-
-    public void setValue(V value) {
-        this.value = value;
     }
 
     @Override

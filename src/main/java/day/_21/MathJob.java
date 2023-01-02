@@ -2,7 +2,7 @@ package day._21;
 
 public class MathJob extends AbstractJob {
 
-    private String operation;
+    private final String operation;
 
     public MathJob(String label, String operation) {
         super(label, 0L);
@@ -17,10 +17,6 @@ public class MathJob extends AbstractJob {
 
     public String getOperation() {
         return operation;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
     }
 
     @Override

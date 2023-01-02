@@ -4,11 +4,8 @@ import util.coordinate.Coordinate;
 
 public final class PathCell {
 
-    private Coordinate coordinate;
-    private Integer numberOfSteps;
-
-    PathCell() {
-    }
+    private final Coordinate coordinate;
+    private final Integer numberOfSteps;
 
     public PathCell(Coordinate coordinate, Integer numberOfSteps) {
         this.coordinate = coordinate.copy();

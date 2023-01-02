@@ -1,5 +1,6 @@
 package day._17;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,7 +13,7 @@ public class ChamberState {
     }
 
     public List<Integer> getHeightDifferences() {
-        return heightDifferences;
+        return new ArrayList<>(heightDifferences);
     }
 
     @Override

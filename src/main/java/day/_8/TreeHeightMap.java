@@ -59,7 +59,7 @@ public class TreeHeightMap extends IntegerGrid {
     }
 
     public int getHighestScenicScore() {
-        return board.stream().map(this::calculateScenicScoreOf).max(Integer::compare).orElseThrow();
+        return board.stream().mapToInt(this::calculateScenicScoreOf).max().orElseThrow();
     }
 
     private int calculateScenicScoreOf(GridCell<Integer> gridCell) {
