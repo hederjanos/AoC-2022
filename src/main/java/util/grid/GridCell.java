@@ -7,7 +7,7 @@ import java.util.Objects;
 public class GridCell<V> {
 
     private final Coordinate coordinate;
-    private V value;
+    private final V value;
 
     public GridCell(Coordinate coordinate, V value) {
         this.coordinate = coordinate;
@@ -15,7 +15,7 @@ public class GridCell<V> {
     }
 
     public GridCell(GridCell<V> cell) {
-        coordinate = cell.getCoordinate().copy();
+        coordinate = cell.getCoordinate();
         value = cell.getValue();
     }
 
@@ -24,7 +24,7 @@ public class GridCell<V> {
     }
 
     public Coordinate getCoordinate() {
-        return coordinate.copy();
+        return coordinate;
     }
 
     public V getValue() {

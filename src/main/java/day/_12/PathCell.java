@@ -8,12 +8,12 @@ public final class PathCell {
     private final Integer numberOfSteps;
 
     public PathCell(Coordinate coordinate, Integer numberOfSteps) {
-        this.coordinate = coordinate.copy();
+        this.coordinate = coordinate;
         this.numberOfSteps = numberOfSteps;
     }
 
     public Coordinate getCoordinate() {
-        return coordinate.copy();
+        return coordinate;
     }
 
     public Integer getNumberOfSteps() {

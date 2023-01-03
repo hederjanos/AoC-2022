@@ -62,7 +62,7 @@ public class ValveSystem {
         Map<ValveCombination, Integer> maxPressures = new HashMap<>();
         Map<ValvePair, Integer> shortestPaths = findShortestPaths();
         Deque<ValveSystemState> valveSystemStates = new ArrayDeque<>();
-        ValveSystemState initState = new ValveSystemState(start, 0, 0, 0, new HashSet<>());
+        ValveSystemState initState = new ValveSystemState(start, 0, 0, 0, Set.of());
         valveSystemStates.offer(initState);
         while (!valveSystemStates.isEmpty()) {
             ValveSystemState currentState = valveSystemStates.poll();
@@ -126,7 +126,7 @@ public class ValveSystem {
 
     private void refreshValveCombinations(Map<ValveCombination, Integer> maxPressures, ValveSystemState newState, int availableTime) {
         int possibleReleasedPressure = getPossibleReleasedPressure(newState, availableTime);
-        ValveCombination valveCombination = new ValveCombination(newState.getOpenValves());
+        ValveCombination valveCombination = new ValveCombination(Collections.unmodifiableSet(newState.getOpenValves()));
         if (!(maxPressures.containsKey(valveCombination) && maxPressures.get(valveCombination) >= possibleReleasedPressure)) {
             maxPressures.put(valveCombination, possibleReleasedPressure);
         }
@@ -148,7 +148,7 @@ public class ValveSystem {
         int releasedPressure = current.getReleasedPressure() + (numberOfStepsFromCurrent + 1) * current.getPressureRate();
         Set<Valve> openValves = new HashSet<>(current.getOpenValves());
         openValves.add(valve);
-        return new ValveSystemState(valve, elapsedTime, pressureRate, releasedPressure, openValves);
+        return new ValveSystemState(valve, elapsedTime, pressureRate, releasedPressure, Collections.unmodifiableSet(openValves));
     }
 
     @Override

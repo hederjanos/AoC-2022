@@ -10,12 +10,12 @@ public final class Expedition {
     private final Integer elapsedTime;
 
     public Expedition(Coordinate coordinate, Integer numberOfMinutes) {
-        this.coordinate = coordinate.copy();
+        this.coordinate = coordinate;
         this.elapsedTime = numberOfMinutes;
     }
 
     public Coordinate getCoordinate() {
-        return coordinate.copy();
+        return coordinate;
     }
 
     public Integer getElapsedTime() {

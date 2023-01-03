@@ -35,8 +35,8 @@ public class BoilingBouldersSolver extends Solver<Integer> {
 
     private int getFullSurfaceArea() {
         return lavaCubes.stream()
-                .map(coordinate3D -> getNumberOfFreeSides(coordinate3D, lavaCubes))
-                .reduce(0, Integer::sum);
+                .mapToInt(coordinate3D -> getNumberOfFreeSides(coordinate3D, lavaCubes))
+                .sum();
     }
 
     private int getNumberOfFreeSides(Coordinate3D coordinate, Set<Coordinate3D> cubes) {
@@ -53,9 +53,9 @@ public class BoilingBouldersSolver extends Solver<Integer> {
     protected Integer solvePartTwo() {
         Set<Coordinate3D> outsideAirCubes = getOutsideAirCubes();
         Set<Coordinate3D> insideAirCubes = getInsideAirCubes(outsideAirCubes);
-        Integer interiorSurfaceArea = insideAirCubes.stream()
-                .map(coordinate3D -> getNumberOfFreeSides(coordinate3D, insideAirCubes))
-                .reduce(0, Integer::sum);
+        int interiorSurfaceArea = insideAirCubes.stream()
+                .mapToInt(coordinate3D -> getNumberOfFreeSides(coordinate3D, insideAirCubes))
+                .sum();
         return fullSurfaceArea - interiorSurfaceArea;
     }
 

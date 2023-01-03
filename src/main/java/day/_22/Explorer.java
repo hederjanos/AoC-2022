@@ -95,7 +95,7 @@ public class Explorer {
     }
 
     public Coordinate getCoordinate() {
-        return coordinate.copy();
+        return coordinate;
     }
 
     public Direction getDirection() {

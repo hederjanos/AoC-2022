@@ -13,7 +13,7 @@ public class Sensor {
     }
 
     public Coordinate getClosestBeacon() {
-        return closestBeacon.copy();
+        return closestBeacon;
     }
 
     public int getDistance() {

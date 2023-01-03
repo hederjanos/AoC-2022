@@ -84,7 +84,7 @@ public class TunnelNetwork {
         return reducedLineSegments.stream()
                 .map(lineSegment -> lineSegment.getEnd().getX() - lineSegment.getStart().getX())
                 .mapToLong(Integer::longValue)
-                .reduce(0L, Long::sum);
+                .sum();
     }
 
     public Coordinate calculateBeaconCoordinateAtHorizontal(int y, int from, int to) {

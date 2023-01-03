@@ -21,11 +21,11 @@ public class HorizontalLineSegment implements Comparable<HorizontalLineSegment> 
     }
 
     public Coordinate getStart() {
-        return start.copy();
+        return start;
     }
 
     public Coordinate getEnd() {
-        return end.copy();
+        return end;
     }
 
     public HorizontalLineSegment createCommonLineSegmentIfOverlapping(HorizontalLineSegment lineSegment) {
