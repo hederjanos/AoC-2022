@@ -80,19 +80,19 @@ public class Cave {
         while (isFalling) {
             boolean trial = false;
             for (Direction dir : possibleDirs) {
-                Coordinate newSand = new Coordinate(sand.getX() + dir.getX(), sand.getY() + dir.getY());
+                Coordinate newSand = sand.moveByDirection(dir);
                 if (!rocks.contains(newSand) && !sands.contains(newSand)) {
                     if (!isInsideCave(newSand)) {
                         if (!withFloor) {
                             flowsOut = true;
                         } else if (!isAtFloor(newSand)) {
                             trial = true;
-                            sand = sand.moveByDirection(dir);
+                            sand = newSand;
                         }
                         break;
                     }
                     trial = true;
-                    sand = sand.moveByDirection(dir);
+                    sand = newSand;
                     break;
                 }
             }
