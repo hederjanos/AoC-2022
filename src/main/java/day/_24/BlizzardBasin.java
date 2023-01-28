@@ -23,14 +23,15 @@ public class BlizzardBasin {
         start = new Coordinate(1, 0);
         target = new Coordinate(width - 2, height - 1);
         blizzards = IntStream.range(0, puzzle.size())
-                .mapToObj(i -> {
-                    String line = puzzle.get(i);
-                    return IntStream.range(0, line.length())
-                            .filter(j -> line.charAt(j) != '#' && line.charAt(j) != '.')
-                            .mapToObj(j -> parseBlizzard(i, j, line))
-                            .collect(Collectors.toSet());
-                })
+                .mapToObj(i -> parseBlizzardsInLine(puzzle.get(i), i))
                 .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Blizzard> parseBlizzardsInLine(String line, int i) {
+        return IntStream.range(0, line.length())
+                .filter(j -> line.charAt(j) != '#' && line.charAt(j) != '.')
+                .mapToObj(j -> parseBlizzard(i, j, line))
                 .collect(Collectors.toSet());
     }
 
@@ -163,20 +164,22 @@ public class BlizzardBasin {
     public String toString(int elapsedTime) {
         return IntStream.range(0, height)
                 .mapToObj(i -> IntStream.range(0, width)
-                        .mapToObj(j -> {
-                            String symbol = "";
-                            Coordinate coordinate = new Coordinate(j, i);
-                            if (start.equals(coordinate) || target.equals(coordinate)) {
-                                symbol = ".";
-                            } else if (!isCoordinateInBounds(coordinate)) {
-                                symbol = "#";
-                            } else {
-                                symbol = getBlizzardSymbolOrNothing(elapsedTime, coordinate);
-                            }
-                            return symbol;
-                        })
+                        .mapToObj(j -> createALine(elapsedTime, i, j))
                         .collect(Collectors.joining()))
                 .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    private String createALine(int elapsedTime, int i, int j) {
+        String symbol;
+        Coordinate coordinate = new Coordinate(j, i);
+        if (start.equals(coordinate) || target.equals(coordinate)) {
+            symbol = ".";
+        } else if (!isCoordinateInBounds(coordinate)) {
+            symbol = "#";
+        } else {
+            symbol = getBlizzardSymbolOrNothing(elapsedTime, coordinate);
+        }
+        return symbol;
     }
 
     private String getBlizzardSymbolOrNothing(int elapsedTime, Coordinate coordinate) {
@@ -215,4 +218,5 @@ public class BlizzardBasin {
     public Coordinate getTarget() {
         return target;
     }
+
 }

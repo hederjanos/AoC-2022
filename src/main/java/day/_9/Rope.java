@@ -17,15 +17,15 @@ public class Rope {
 
     public Set<Coordinate> move(Motion motion) {
         Set<Coordinate> visitedPositionsByTail = new HashSet<>();
-        IntStream.range(0, motion.getNumberOfSteps())
-                .forEach(i -> {
-                    knots[0] = knots[0].moveByDirection(motion.getDirection());
-                    IntStream.range(1, knots.length)
-                            .forEach(j -> {
-                                knots[j] = moveOneStep(j);
-                                visitedPositionsByTail.add(knots[knots.length - 1]);
-                            });
-                });
+        int bound = motion.getNumberOfSteps();
+        for (int i = 0; i < bound; i++) {
+            knots[0] = knots[0].moveByDirection(motion.getDirection());
+            int bound1 = knots.length;
+            for (int j = 1; j < bound1; j++) {
+                knots[j] = moveOneStep(j);
+                visitedPositionsByTail.add(knots[knots.length - 1]);
+            }
+        }
         return visitedPositionsByTail;
     }
 

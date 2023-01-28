@@ -22,13 +22,15 @@ public class ValveSystem {
 
     private Map<Integer, Valve> initValves(List<String> puzzle) {
         return puzzle.stream()
-                .map(line -> {
-                    String[] reportLineParts = line.split("; ");
-                    String label = extractLabels(reportLineParts[0], 2).get(0);
-                    int flowRate = Integer.parseInt(reportLineParts[0].split("=")[1]);
-                    return new Valve(label, flowRate);
-                })
+                .map(this::initAValve)
                 .collect(Collectors.toMap(Valve::hashCode, valve -> valve));
+    }
+
+    private Valve initAValve(String line) {
+        String[] reportLineParts = line.split("; ");
+        String label = extractLabels(reportLineParts[0], 2).get(0);
+        int flowRate = Integer.parseInt(reportLineParts[0].split("=")[1]);
+        return new Valve(label, flowRate);
     }
 
     private List<String> extractLabels(String reportLinePart, int numberOfChars) {
@@ -83,13 +85,14 @@ public class ValveSystem {
 
     private Map<ValvePair, Integer> findShortestPaths() {
         Map<ValvePair, Integer> shortestPaths = new HashMap<>();
-        valvesWithFlowRates
-                .forEach(from -> valvesWithFlowRates.stream()
-                        .filter(to -> !from.equals(to) && !to.equals(start))
-                        .forEach(to -> {
-                            ValvePair valvePair = new ValvePair(from, to);
-                            shortestPaths.put(valvePair, findShortestPath(valvePair));
-                        }));
+        for (Valve from : valvesWithFlowRates) {
+            for (Valve to : valvesWithFlowRates) {
+                if (!from.equals(to) && !to.equals(start)) {
+                    ValvePair valvePair = new ValvePair(from, to);
+                    shortestPaths.put(valvePair, findShortestPath(valvePair));
+                }
+            }
+        }
         return shortestPaths;
     }
 

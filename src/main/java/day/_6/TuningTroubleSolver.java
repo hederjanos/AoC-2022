@@ -20,9 +20,17 @@ public class TuningTroubleSolver extends Solver<Integer> {
 
     private int solve(int distinct) {
         return IntStream.range(distinct - 1, dataStream.length())
-                       .filter(i -> dataStream.substring(i - distinct + 1, i + 1).chars().boxed().distinct().count() == distinct)
+                       .filter(i -> testUniqueness(distinct, i))
                        .findFirst()
                        .orElseThrow() + 1;
+    }
+
+    private boolean testUniqueness(int distinct, int i) {
+        return dataStream.substring(i - distinct + 1, i + 1)
+                       .chars()
+                       .boxed()
+                       .distinct()
+                       .count() == distinct;
     }
 
     @Override

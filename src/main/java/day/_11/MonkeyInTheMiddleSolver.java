@@ -39,15 +39,20 @@ public class MonkeyInTheMiddleSolver extends Solver<Long> {
     }
 
     private void doRounds(int numberOfRounds) {
-        IntStream.range(0, numberOfRounds)
-                .forEach(i -> monkeys
-                        .forEach(monkey -> monkey.getItems()
-                                .forEach(item -> {
-                                    Item newItem = monkey.doMathOnItem(item);
-                                    monkey.removeItem(item);
-                                    int toMonkey = monkey.doTestOnItem(newItem);
-                                    monkeys.get(toMonkey).addItem(newItem);
-                                })));
+        for (int i = 0; i < numberOfRounds; i++) {
+            for (Monkey monkey : monkeys) {
+                for (Item item : monkey.getItems()) {
+                    doOperations(monkey, item);
+                }
+            }
+        }
+    }
+
+    private void doOperations(Monkey monkey, Item item) {
+        Item newItem = monkey.doMathOnItem(item);
+        monkey.removeItem(item);
+        int toMonkey = monkey.doTestOnItem(newItem);
+        monkeys.get(toMonkey).addItem(newItem);
     }
 
     private Long calculateMonkeyBusiness() {

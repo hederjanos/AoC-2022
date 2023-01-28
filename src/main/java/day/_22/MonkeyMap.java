@@ -6,7 +6,6 @@ import util.coordinate.Direction;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 public class MonkeyMap {
 
@@ -17,25 +16,26 @@ public class MonkeyMap {
     private static final int[] FACING_VALUES = new int[]{3, 0, 0, 0, 1, 0, 2, 0};
 
     public MonkeyMap(List<String> stringMap) {
-        IntStream.range(0, stringMap.size())
-                .forEach(i -> {
-                    String line = stringMap.get(i);
-                    IntStream.range(0, line.length())
-                            .forEach(j -> {
-                                        Coordinate coordinate = new Coordinate(j + 1, i + 1);
-                                        char charAt = line.charAt(j);
-                                        if (charAt == '#') {
-                                            walls.add(coordinate);
-                                        } else if (charAt == '.') {
-                                            if (explorer == null) {
-                                                start = coordinate;
-                                                resetExplorer();
-                                            }
-                                            tiles.add(coordinate);
-                                        }
-                                    }
-                            );
-                });
+        for (int i = 0; i < stringMap.size(); i++) {
+            String line = stringMap.get(i);
+            for (int j = 0; j < line.length(); j++) {
+                parseACoordinate(line, i, j);
+            }
+        }
+    }
+
+    private void parseACoordinate(String line, int i, int j) {
+        Coordinate coordinate = new Coordinate(j + 1, i + 1);
+        char charAt = line.charAt(j);
+        if (charAt == '#') {
+            walls.add(coordinate);
+        } else if (charAt == '.') {
+            if (explorer == null) {
+                start = coordinate;
+                resetExplorer();
+            }
+            tiles.add(coordinate);
+        }
     }
 
     public void resetExplorer() {

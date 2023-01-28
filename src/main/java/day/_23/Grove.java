@@ -20,18 +20,22 @@ public class Grove {
     public Grove(List<String> puzzle) {
         borders = initBorders();
         elfPositions = IntStream.range(0, puzzle.size())
-                .mapToObj(i -> {
-                    String line = puzzle.get(i);
-                    return IntStream.range(0, line.length())
-                            .filter(j -> line.charAt(j) == '#')
-                            .mapToObj(j -> {
-                                Coordinate coordinate = new Coordinate(j, i);
-                                refreshBorderPositions(coordinate);
-                                return coordinate;
-                            }).collect(Collectors.toSet());
-                })
+                .mapToObj(i -> parseCoordinatesInLine(puzzle.get(i), i))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
+    }
+
+    private Set<Coordinate> parseCoordinatesInLine(String line, int i) {
+        return IntStream.range(0, line.length())
+                .filter(j -> line.charAt(j) == '#')
+                .mapToObj(j -> parseACoordinate(i, j))
+                .collect(Collectors.toSet());
+    }
+
+    private Coordinate parseACoordinate(int i, int j) {
+        Coordinate coordinate = new Coordinate(j, i);
+        refreshBorderPositions(coordinate);
+        return coordinate;
     }
 
     private int[] initBorders() {
@@ -76,22 +80,21 @@ public class Grove {
     private Map<Coordinate, Coordinate> getProposedNexPositions(int rounds) {
         Map<Coordinate, Coordinate> proposedNextPositions = new HashMap<>();
         Map<Coordinate, Integer> nextPositionRegister = new HashMap<>();
-        elfPositions.stream()
-                .filter(this::hasAnyNeighbours)
-                .forEach(elfPosition -> {
-                    Coordinate proposedNextPosition = getProposedNextPosition(rounds, elfPosition);
-                    if (proposedNextPosition != null) {
-                        proposedNextPositions.putIfAbsent(elfPosition, proposedNextPosition);
-                        nextPositionRegister.compute(proposedNextPosition, (k, v) -> v == null ? 1 : v + 1);
-                    }
-                });
+        for (Coordinate elfPosition : elfPositions) {
+            if (hasAnyNeighbours(elfPosition)) {
+                Coordinate proposedNextPosition = getProposedNextPosition(rounds, elfPosition);
+                if (proposedNextPosition != null) {
+                    proposedNextPositions.putIfAbsent(elfPosition, proposedNextPosition);
+                    nextPositionRegister.compute(proposedNextPosition, (k, v) -> v == null ? 1 : v + 1);
+                }
+            }
+        }
         proposedNextPositions.entrySet().removeIf(entry -> nextPositionRegister.get(entry.getValue()) > 1);
         return proposedNextPositions;
     }
 
     private boolean hasAnyNeighbours(Coordinate coordinate) {
-        return coordinate.getAdjacentCoordinates().stream()
-                .anyMatch(elfPositions::contains);
+        return coordinate.getAdjacentCoordinates().stream().anyMatch(elfPositions::contains);
     }
 
     private Coordinate getProposedNextPosition(int rounds, Coordinate coordinate) {

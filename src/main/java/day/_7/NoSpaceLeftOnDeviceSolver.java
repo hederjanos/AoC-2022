@@ -69,13 +69,13 @@ public class NoSpaceLeftOnDeviceSolver extends Solver<Long> {
 
     @Override
     protected Long solvePartOne() {
-        return root.getTotalSizeOfDirectoriesWithSizeAtMost(100000L);
+        return root.getTotalSizeOfDirectoriesWithSizeAtMost(100_000L);
     }
 
     @Override
     protected Long solvePartTwo() {
-        long freeSpace = 70000000L - root.getSize();
-        long neededSpace = 30000000L - freeSpace;
+        long freeSpace = 70_000_000L - root.getSize();
+        long neededSpace = 30_000_000L - freeSpace;
         return root.getSmallestSizedDirectoryAtLeast(neededSpace);
     }
 

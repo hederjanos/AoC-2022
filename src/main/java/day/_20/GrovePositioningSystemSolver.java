@@ -45,24 +45,22 @@ public class GrovePositioningSystemSolver extends Solver<Long> {
 
     private void mixInPlace() {
         int size = nodes.size();
-        IntStream.range(0, size)
-                .forEachOrdered(i -> {
-                    int modSize = size - 1;
-                    Node current = nodes.get(i);
-                    int modulo = (int) (current.getValue() % modSize + modSize) % modSize;
-                    current.getPrevious().setNext(current.getNext());
-                    current.getNext().setPrevious(current.getPrevious());
-                    int j = 0;
-                    Node insert = current.getPrevious();
-                    while (j < modulo) {
-                        insert = insert.getNext();
-                        j++;
-                    }
-                    current.setPrevious(insert);
-                    current.setNext(insert.getNext());
-                    current.getPrevious().setNext(current);
-                    current.getNext().setPrevious(current);
-                });
+        for (Node node : nodes) {
+            int modSize = size - 1;
+            int modulo = (int) (node.getValue() % modSize + modSize) % modSize;
+            node.getPrevious().setNext(node.getNext());
+            node.getNext().setPrevious(node.getPrevious());
+            int j = 0;
+            Node insert = node.getPrevious();
+            while (j < modulo) {
+                insert = insert.getNext();
+                j++;
+            }
+            node.setPrevious(insert);
+            node.setNext(insert.getNext());
+            node.getPrevious().setNext(node);
+            node.getNext().setPrevious(node);
+        }
     }
 
     private long getSumOfBorders() {

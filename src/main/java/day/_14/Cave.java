@@ -30,13 +30,15 @@ public class Cave {
         String[] coordinates = line.split(" -> ");
         List<Coordinate> boundaries = Arrays.stream(coordinates).map(Coordinate::new).collect(Collectors.toList());
         return IntStream.range(0, boundaries.size() - 1)
-                .mapToObj(i -> {
-                    Coordinate start = boundaries.get(i);
-                    Coordinate end = boundaries.get(i + 1);
-                    return (Set<Coordinate>) new HashSet<>(start.getCoordinatesInLineBetweenWith(end));
-                })
+                .mapToObj(i -> initCoordinatesInLine(boundaries, i))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
+    }
+
+    private Set<Coordinate> initCoordinatesInLine(List<Coordinate> boundaries, int i) {
+        Coordinate start = boundaries.get(i);
+        Coordinate end = boundaries.get(i + 1);
+        return start.getCoordinatesInLineBetweenWith(end);
     }
 
     private int[] determineBorders() {

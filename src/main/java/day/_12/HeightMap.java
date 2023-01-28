@@ -7,7 +7,6 @@ import util.grid.IntegerGrid;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class HeightMap extends IntegerGrid {
 
@@ -19,24 +18,26 @@ public class HeightMap extends IntegerGrid {
         height = gridLines.size();
         width = tokenizer.apply(gridLines.get(0)).size();
         board = new ArrayList<>();
-        IntStream.range(0, height)
-                .forEach(i -> {
-                    List<Integer> numbers = new ArrayList<>(tokenizer.apply(gridLines.get(i)));
-                    IntStream.range(0, width)
-                            .forEach(j -> {
-                                Coordinate coordinate = new Coordinate(j, i);
-                                GridCell<Integer> cell = new GridCell<>(coordinate, numbers.get(j));
-                                if ('S' == cell.getValue()) {
-                                    cell = new GridCell<>(coordinate, (int) 'a');
-                                    start = cell;
-                                }
-                                if ('E' == cell.getValue()) {
-                                    cell = new GridCell<>(coordinate, (int) 'z');
-                                    target = cell;
-                                }
-                                board.add(cell);
-                            });
-                });
+        for (int i = 0; i < height; i++) {
+            List<Integer> values = new ArrayList<>(tokenizer.apply(gridLines.get(i)));
+            for (int j = 0; j < width; j++) {
+                initACell(values.get(j), i, j);
+            }
+        }
+    }
+
+    private void initACell(Integer value, int i, int j) {
+        Coordinate coordinate = new Coordinate(j, i);
+        GridCell<Integer> cell = new GridCell<>(coordinate, value);
+        if ('S' == cell.getValue()) {
+            cell = new GridCell<>(coordinate, (int) 'a');
+            start = cell;
+        }
+        if ('E' == cell.getValue()) {
+            cell = new GridCell<>(coordinate, (int) 'z');
+            target = cell;
+        }
+        board.add(cell);
     }
 
     public Optional<PathCell> findFewestStepPathFromDefault() {

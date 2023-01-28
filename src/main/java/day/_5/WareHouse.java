@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collector;
-import java.util.stream.IntStream;
 
 public class WareHouse {
 
@@ -13,18 +12,18 @@ public class WareHouse {
 
     public WareHouse(String numberOfStacks, List<String> crateLines) {
         int stackSize = Integer.parseInt(numberOfStacks);
-        IntStream.range(0, stackSize).forEach(i -> stacks.add(new ArrayDeque<>()));
-        IntStream.range(0, crateLines.size())
-                .forEach(i -> {
-                    char[] cratesPerRow = parseCratesInLine(crateLines.get(i));
-                    IntStream.range(0, stackSize)
-                            .forEach(j -> {
-                                int index = j * 3 + (j == 0 ? 1 : j + 1);
-                                if (cratesPerRow[index] != '\u0000') {
-                                    stacks.get(j).addFirst(cratesPerRow[index]);
-                                }
-                            });
-                });
+        for (int i = 0; i < stackSize; i++) {
+            stacks.add(new ArrayDeque<>());
+        }
+        for (String crateLine : crateLines) {
+            char[] cratesPerRow = parseCratesInLine(crateLine);
+            for (int j = 0; j < stackSize; j++) {
+                int index = j * 3 + (j == 0 ? 1 : j + 1);
+                if (cratesPerRow[index] != '\u0000') {
+                    stacks.get(j).addFirst(cratesPerRow[index]);
+                }
+            }
+        }
     }
 
     private char[] parseCratesInLine(String crates) {
@@ -39,8 +38,12 @@ public class WareHouse {
     }
 
     public void processProcedures(List<Procedure> procedures) {
-        procedures.forEach(procedure -> IntStream.range(0, procedure.getNumberOfMoves())
-                .forEach(i -> stacks.get(procedure.getTo()).addLast(stacks.get(procedure.getFrom()).removeLast())));
+        for (Procedure procedure : procedures) {
+            int bound = procedure.getNumberOfMoves();
+            for (int i = 0; i < bound; i++) {
+                stacks.get(procedure.getTo()).addLast(stacks.get(procedure.getFrom()).removeLast());
+            }
+        }
     }
 
     public void processProceduresEnhanced(List<Procedure> procedures) {

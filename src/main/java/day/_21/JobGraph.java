@@ -28,17 +28,19 @@ public class JobGraph {
 
     private Map<Integer, AbstractJob> initJobs(List<String> puzzle) {
         return puzzle.stream()
-                .map(line -> {
-                    String[] lineParts = line.split(": ");
-                    String label = lineParts[0];
-                    String operation = extractOperation(lineParts[1]);
-                    if (operation.isEmpty()) {
-                        return new ValueJob(label, Integer.parseInt(lineParts[1]));
-                    } else {
-                        return new MathJob(label, operation);
-                    }
-                })
+                .map(this::parseAJob)
                 .collect(Collectors.toMap(AbstractJob::hashCode, job -> job));
+    }
+
+    private AbstractJob parseAJob(String line) {
+        String[] lineParts = line.split(": ");
+        String label = lineParts[0];
+        String operation = extractOperation(lineParts[1]);
+        if (operation.isEmpty()) {
+            return new ValueJob(label, Integer.parseInt(lineParts[1]));
+        } else {
+            return new MathJob(label, operation);
+        }
     }
 
     private String extractOperation(String linePart) {
