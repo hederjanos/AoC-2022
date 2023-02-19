@@ -45,22 +45,19 @@ public class JobGraph {
 
     private String extractOperation(String linePart) {
         String operation = "";
-        for (int i = 0; i < linePart.length(); i++) {
-            switch (linePart.charAt(i)) {
-                case '+':
+        try {
+            Integer.parseInt(linePart);
+        } catch (NumberFormatException e) {
+            for (int i = 0; i < linePart.length(); i++) {
+                if (linePart.charAt(i) == '+') {
                     operation = ADD;
-                    break;
-                case '-':
+                } else if (linePart.charAt(i) == '-') {
                     operation = SUB;
-                    break;
-                case '*':
+                } else if (linePart.charAt(i) == '*') {
                     operation = MUL;
-                    break;
-                case '/':
+                } else if (linePart.charAt(i) == '/') {
                     operation = DIV;
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + linePart.charAt(i));
+                }
             }
         }
         return operation;
@@ -88,16 +85,12 @@ public class JobGraph {
     }
 
     public List<AbstractJob> sort() {
-        Map<Integer, Set<Integer>> copy = new HashMap<>();
-        connections.forEach((key, value) -> copy.put(key, new HashSet<>(value)));
+        Map<Integer, Set<Integer>> copy = connections.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> new HashSet<>(e.getValue())));
         List<AbstractJob> sortedJobs = new ArrayList<>();
-        Deque<AbstractJob> values = new ArrayDeque<>();
-        jobs.values().forEach(abstractJob -> {
-            Set<Integer> dependencies = copy.get(abstractJob.hashCode());
-            if (dependencies.isEmpty()) {
-                values.add(abstractJob);
-            }
-        });
+        Deque<AbstractJob> values = jobs.values().stream()
+                .filter(abstractJob -> copy.get(abstractJob.hashCode()).isEmpty())
+                .collect(Collectors.toCollection(ArrayDeque::new));
         while (!values.isEmpty()) {
             AbstractJob job = values.poll();
             if (!sortedJobs.contains(job)) {
@@ -162,10 +155,10 @@ public class JobGraph {
     }
 
     public JobGraph copy() {
-        Map<Integer, AbstractJob> copyOfJobs = new HashMap<>();
-        jobs.forEach((key, value) -> copyOfJobs.put(key, value.copy()));
-        Map<Integer, List<Integer>> copyOfConnections = new HashMap<>();
-        connections.forEach((key, value) -> copyOfConnections.put(key, new ArrayList<>(value)));
+        Map<Integer, AbstractJob> copyOfJobs = jobs.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().copy()));
+        Map<Integer, List<Integer>> copyOfConnections = connections.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> new ArrayList<>(e.getValue())));
         return new JobGraph(copyOfJobs, copyOfConnections);
     }
 

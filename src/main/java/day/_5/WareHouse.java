@@ -47,7 +47,7 @@ public class WareHouse {
     }
 
     public void processProceduresEnhanced(List<Procedure> procedures) {
-        procedures.forEach(procedure -> {
+        for (Procedure procedure : procedures) {
             Deque<Character> helperDeque = new ArrayDeque<>();
             int counter = 0;
             while (counter < procedure.getNumberOfMoves()) {
@@ -57,7 +57,7 @@ public class WareHouse {
             while (!helperDeque.isEmpty()) {
                 stacks.get(procedure.getTo()).addLast(helperDeque.pop());
             }
-        });
+        }
     }
 
     public String getTopCrates() {

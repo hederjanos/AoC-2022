@@ -67,13 +67,15 @@ public class Grove {
         int i = 0;
         do {
             proposedNextPositions = getProposedNexPositions(i);
-            proposedNextPositions.forEach((key, value) -> {
-                elfPositions.remove(key);
-                elfPositions.add(value);
-            });
+            for (Map.Entry<Coordinate, Coordinate> entry : proposedNextPositions.entrySet()) {
+                elfPositions.remove(entry.getKey());
+                elfPositions.add(entry.getValue());
+            }
             i++;
         } while (i < rounds && !proposedNextPositions.isEmpty());
-        elfPositions.forEach(this::refreshBorderPositions);
+        for (Coordinate elfPosition : elfPositions) {
+            refreshBorderPositions(elfPosition);
+        }
         return i;
     }
 

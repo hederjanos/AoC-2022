@@ -4,7 +4,6 @@ import util.common.Solver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class GrovePositioningSystemSolver extends Solver<Long> {
 
@@ -22,7 +21,9 @@ public class GrovePositioningSystemSolver extends Solver<Long> {
 
     private long solve(int multiplier, int rounds) {
         nodes = parseInput(multiplier);
-        IntStream.range(0, rounds).forEach(i -> mixInPlace());
+        for (int i = 0; i < rounds; i++) {
+            mixInPlace();
+        }
         return getSumOfBorders();
     }
 

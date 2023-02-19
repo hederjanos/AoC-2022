@@ -47,7 +47,7 @@ public class Cave {
         minmax[1] = Integer.MIN_VALUE;
         minmax[2] = 0;
         minmax[3] = Integer.MIN_VALUE;
-        rocks.forEach(coordinate -> {
+        for (Coordinate coordinate : rocks) {
             if (coordinate.getX() < minmax[0]) {
                 minmax[0] = coordinate.getX();
             }
@@ -57,7 +57,7 @@ public class Cave {
             if (coordinate.getY() > minmax[3]) {
                 minmax[3] = coordinate.getY();
             }
-        });
+        }
         return minmax;
     }
 

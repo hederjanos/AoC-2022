@@ -4,7 +4,6 @@ import util.coordinate.Coordinate;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 public class Rope {
 
@@ -12,7 +11,9 @@ public class Rope {
 
     public Rope(int numberOfKnots) {
         knots = new Coordinate[numberOfKnots];
-        IntStream.range(0, numberOfKnots).forEach(i -> knots[i] = new Coordinate(0, 0));
+        for (int i = 0; i < numberOfKnots; i++) {
+            knots[i] = new Coordinate(0, 0);
+        }
     }
 
     public Set<Coordinate> move(Motion motion) {

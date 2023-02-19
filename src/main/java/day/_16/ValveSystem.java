@@ -157,15 +157,17 @@ public class ValveSystem {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        connections.forEach((key, value) -> {
+        for (Map.Entry<Integer, Set<Integer>> entry : connections.entrySet()) {
+            Integer key = entry.getKey();
+            Set<Integer> values = entry.getValue();
             appendValveByKey(valves.get(key), stringBuilder, ":");
-            value.forEach(integer -> {
-                appendValveByKey(valves.get(integer), stringBuilder, ",");
+            for (Integer value : values) {
+                appendValveByKey(valves.get(value), stringBuilder, ",");
                 stringBuilder.append(" ");
-            });
+            }
             stringBuilder.replace(stringBuilder.length() - 3, stringBuilder.length(), "");
             stringBuilder.append("\n");
-        });
+        }
         return stringBuilder.toString().trim();
     }
 

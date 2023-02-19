@@ -49,10 +49,13 @@ public class Factory {
 
     private int[] getMaxRobots(Blueprint blueprint) {
         int[] maxRobots = new int[blueprint.getCosts().length];
-        IntStream.range(0, blueprint.getCosts().length - 1)
-                .forEach(i -> maxRobots[i] = Arrays.stream(blueprint.getCosts())
-                        .map(cost -> cost[i]).max(Integer::compareTo)
-                        .orElseThrow());
+        int bound = blueprint.getCosts().length - 1;
+        for (int j = 0; j < bound; j++) {
+            int i = j;
+            maxRobots[i] = Arrays.stream(blueprint.getCosts())
+                    .map(cost -> cost[i]).max(Integer::compareTo)
+                    .orElseThrow();
+        }
         maxRobots[maxRobots.length - 1] = Integer.MAX_VALUE;
         return maxRobots;
     }
